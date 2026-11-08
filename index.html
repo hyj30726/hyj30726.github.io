@@ -291,6 +291,27 @@ details.f p{color:var(--sub);margin-top:8px;font-size:15px}
 .rform{display:grid;grid-template-columns:110px 1fr auto;gap:8px;margin-top:10px}
 .empty{color:var(--sub);text-align:center;padding:24px 0}
 @media (max-width:760px){.rform{grid-template-columns:1fr}}
+
+/* memory match game */
+.mg{--mg-accent:#2f6fed;max-width:640px;margin:0 auto}
+.mg-lead{margin:0 0 1rem;color:var(--sub)}
+.mg-bar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:.9rem;font-size:.95rem;color:var(--sub)}
+.mg-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.6rem}
+.mg-card{aspect-ratio:1;border-radius:12px;border:1px solid var(--line);background:var(--soft);color:var(--ink);font:inherit;font-weight:700;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;text-align:center;padding:.3rem;transition:transform .2s ease,background .2s ease,border-color .2s ease}
+.mg-card:hover:not(.done){transform:translateY(-2px);border-color:var(--mg-accent)}
+.mg-card:focus-visible,.mg-reset:focus-visible{outline:3px solid var(--mg-accent);outline-offset:2px}
+.mg-card .mg-face{display:none}
+.mg-card .mg-face.emoji{font-size:2rem}
+.mg-card.open,.mg-card.done{background:var(--paper);border-color:var(--mg-accent)}
+.mg-card.open .mg-face,.mg-card.done .mg-face{display:block}
+.mg-card.open .mg-back,.mg-card.done .mg-back{display:none}
+.mg-card.done{opacity:.75;cursor:default}
+.mg-back{font-size:1.4rem;opacity:.5}
+.mg-msg{margin-top:1rem;min-height:1.6em;font-weight:600;color:var(--accent)}
+.mg-reset{margin-top:.6rem;padding:.6rem 1.1rem;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink);font:inherit;cursor:pointer}
+@media(max-width:420px){.mg-grid{gap:.4rem}.mg-card{font-size:.85rem}.mg-card .mg-face.emoji{font-size:1.6rem}}
+@media(prefers-reduced-motion:reduce){.mg-card{transition:none}}
+
 </style>
 </head>
 <body>
@@ -298,7 +319,7 @@ details.f p{color:var(--sub);margin-top:8px;font-size:15px}
 <nav aria-label="페이지 이동">
   <div class="wrap">
     <b>황유주</b>
-    <a href="#about">소개</a><a href="#study">학업과 역량</a><a href="#style">성향</a><a href="#week">주간 루틴</a><a href="#winter">겨울방학</a><a href="#goal">목표</a><a href="#quiz">퀴즈</a><a href="#faq">FAQ</a><a href="#guest">방명록</a><a href="#contact">연락</a><button class="tbtn" id="theme" type="button" aria-label="화면 색상 바꾸기">다크 모드</button>
+    <a href="#about">소개</a><a href="#study">학업과 역량</a><a href="#style">성향</a><a href="#week">주간 루틴</a><a href="#winter">겨울방학</a><a href="#goal">목표</a><a href="#quiz">퀴즈</a><a href="#faq">FAQ</a><a href="#match">짝 맞추기</a><a href="#guest">방명록</a><a href="#contact">연락</a><button class="tbtn" id="theme" type="button" aria-label="화면 색상 바꾸기">다크 모드</button>
   </div>
 </nav>
 
@@ -428,6 +449,22 @@ details.f p{color:var(--sub);margin-top:8px;font-size:15px}
       <details class="f"><summary>경영정보학부를 선택한 이유는 무엇인가요?</summary><p>조직의 돈과 정보가 어떻게 움직이는지 이해하고, 정보 기술로 그 움직임을 더 낫게 만들고 싶기 때문입니다. 경영의 관점과 데이터를 읽는 힘을 함께 키우려고 합니다.</p></details>
       <details class="f"><summary>졸업까지의 목표는 무엇인가요?</summary><p>1학년에 경영·회계 기초와 자격증, 2학년에 전공 심화, 3학년에 공모전·인턴 등 실무 경험, 4학년에 포트폴리오 정리와 진로 확정을 목표로 단계적으로 준비하고 있습니다.</p></details>
       <details class="f"><summary>연락은 어디로 하면 되나요?</summary><p>아래 방명록에 글을 남기시거나, 이메일과 인스타그램으로 편하게 연락해 주세요.</p></details>
+    </div>
+  </section>
+
+  <section id="match" aria-labelledby="mg-title">
+    <div class="wrap">
+      <div class="mg">
+        <h2 id="mg-title">유주 카드 짝 맞추기</h2>
+        <p class="mg-lead">그림 카드와 이름 카드를 짝지어 보세요. 유주가 요즘 관심 있는 것들이 담겨 있어요.</p>
+        <div class="mg-bar">
+          <span id="mg-moves">시도 0번</span>
+          <span id="mg-best">최고 기록 -</span>
+        </div>
+        <div class="mg-grid" id="mg-grid"></div>
+        <p class="mg-msg" id="mg-msg" role="status" aria-live="polite"></p>
+        <button type="button" class="mg-reset" id="mg-reset">다시 섞기</button>
+      </div>
     </div>
   </section>
 
@@ -613,5 +650,39 @@ function drawQ(){
 }
 drawQ();
 </script>
+
+<script>
+/* ===== 유주 카드 짝 맞추기 ===== */
+(function(){
+  var PAIRS=[{e:"📒",t:"회계"},{e:"📊",t:"엑셀"},{e:"🏝️",t:"오키나와"},{e:"📜",t:"한국사"},{e:"🤝",t:"협업"},{e:"🎓",t:"국민대"}];
+  var grid=document.getElementById("mg-grid"),movesEl=document.getElementById("mg-moves"),bestEl=document.getElementById("mg-best"),msgEl=document.getElementById("mg-msg");
+  var best=null,moves=0,matched=0,first=null,lock=false;
+  function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t;}return a;}
+  function build(){
+    var cards=[];PAIRS.forEach(function(p,i){cards.push({id:i,kind:"emoji",text:p.e});cards.push({id:i,kind:"text",text:p.t});});shuffle(cards);
+    grid.innerHTML="";moves=0;matched=0;first=null;lock=false;movesEl.textContent="시도 0번";msgEl.textContent="";
+    cards.forEach(function(c){
+      var b=document.createElement("button");b.type="button";b.className="mg-card";b.setAttribute("aria-label","숨겨진 카드");b.dataset.id=c.id;
+      var back=document.createElement("span");back.className="mg-back";back.setAttribute("aria-hidden","true");back.textContent="?";
+      var face=document.createElement("span");face.className="mg-face "+c.kind;face.textContent=c.text;
+      b.append(back,face);b.addEventListener("click",function(){flip(b);});grid.appendChild(b);
+    });
+  }
+  function flip(b){
+    if(lock||b.classList.contains("open")||b.classList.contains("done"))return;
+    b.classList.add("open");b.setAttribute("aria-label",b.querySelector(".mg-face").textContent);
+    if(!first){first=b;return;}
+    moves++;movesEl.textContent="시도 "+moves+"번";var a=first;first=null;
+    if(a.dataset.id===b.dataset.id){
+      a.classList.replace("open","done");b.classList.replace("open","done");matched++;msgEl.textContent="짝을 찾았어요!";if(matched===PAIRS.length)win();
+    }else{
+      lock=true;msgEl.textContent="";window.setTimeout(function(){a.classList.remove("open");b.classList.remove("open");a.setAttribute("aria-label","숨겨진 카드");b.setAttribute("aria-label","숨겨진 카드");lock=false;},800);
+    }
+  }
+  function win(){if(best===null||moves<best){best=moves;bestEl.textContent="최고 기록 "+best+"번";}msgEl.textContent="완성! "+moves+"번 만에 모두 맞혔어요.";}
+  document.getElementById("mg-reset").addEventListener("click",build);build();
+})();
+</script>
+
 </body>
 </html>

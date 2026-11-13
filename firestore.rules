@@ -1,0 +1,125 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function validReactionEmoji(emoji) {
+      return emoji in ['💛', '🤗', '🌱', '✨', '🫂', '🙏'];
+    }
+
+    function validPost() {
+      return request.resource.data.keys().hasAll([
+          'authorUid', 'category', 'content', 'heartCount', 'createdAt'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'authorUid', 'category', 'content', 'heartCount', 'createdAt'
+        ])
+        && request.resource.data.authorUid == request.auth.uid
+        && request.resource.data.category in ['학교·진로', '관계', '마음·건강', '일상', '기타']
+        && request.resource.data.content is string
+        && request.resource.data.content.size() >= 5
+        && request.resource.data.content.size() <= 1000
+        && request.resource.data.heartCount == 0
+        && request.resource.data.createdAt == request.time;
+    }
+
+    function validReply() {
+      return request.resource.data.keys().hasAll(['authorUid', 'content', 'createdAt'])
+        && request.resource.data.keys().hasOnly(['authorUid', 'content', 'createdAt'])
+        && request.resource.data.authorUid == request.auth.uid
+        && request.resource.data.content is string
+        && request.resource.data.content.size() >= 1
+        && request.resource.data.content.size() <= 500
+        && request.resource.data.createdAt == request.time;
+    }
+
+    function validJournal() {
+      return request.resource.data.keys().hasAll([
+          'date', 'mood', 'content', 'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'date', 'mood', 'content', 'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.date is string
+        && request.resource.data.date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && request.resource.data.mood is int
+        && request.resource.data.mood >= 1
+        && request.resource.data.mood <= 5
+        && request.resource.data.content is string
+        && request.resource.data.content.size() >= 1
+        && request.resource.data.content.size() <= 5000
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    match /posts/{postId} {
+      allow read: if true;
+      allow create: if signedIn() && validPost();
+      allow update: if signedIn()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['heartCount'])
+        && (
+          (
+            request.resource.data.heartCount == resource.data.heartCount + 1
+            && !exists(/databases/$(database)/documents/posts/$(postId)/reactions/$(request.auth.uid))
+            && existsAfter(/databases/$(database)/documents/posts/$(postId)/reactions/$(request.auth.uid))
+          )
+          || (
+            request.resource.data.heartCount == resource.data.heartCount - 1
+            && resource.data.heartCount > 0
+            && exists(/databases/$(database)/documents/posts/$(postId)/reactions/$(request.auth.uid))
+            && !existsAfter(/databases/$(database)/documents/posts/$(postId)/reactions/$(request.auth.uid))
+          )
+        );
+      allow delete: if false;
+
+      match /reactions/{userId} {
+        allow read: if signedIn() && request.auth.uid == userId;
+        allow create: if signedIn()
+          && request.auth.uid == userId
+          && request.resource.data.keys().hasAll(['userUid', 'emoji', 'createdAt'])
+          && request.resource.data.keys().hasOnly(['userUid', 'emoji', 'createdAt'])
+          && request.resource.data.userUid == request.auth.uid
+          && validReactionEmoji(request.resource.data.emoji)
+          && request.resource.data.createdAt == request.time
+          && exists(/databases/$(database)/documents/posts/$(postId))
+          && getAfter(/databases/$(database)/documents/posts/$(postId)).data.heartCount
+            == get(/databases/$(database)/documents/posts/$(postId)).data.heartCount + 1;
+        allow update: if signedIn()
+          && request.auth.uid == userId
+          && request.resource.data.keys().hasAll(['userUid', 'emoji', 'createdAt'])
+          && request.resource.data.keys().hasOnly(['userUid', 'emoji', 'createdAt'])
+          && request.resource.data.userUid == request.auth.uid
+          && validReactionEmoji(request.resource.data.emoji)
+          && request.resource.data.createdAt == resource.data.createdAt
+          && (
+            resource.data.keys().hasOnly(['createdAt'])
+            || resource.data.userUid == request.auth.uid
+          );
+        allow delete: if signedIn()
+          && request.auth.uid == userId
+          && getAfter(/databases/$(database)/documents/posts/$(postId)).data.heartCount
+            == get(/databases/$(database)/documents/posts/$(postId)).data.heartCount - 1;
+      }
+
+      match /replies/{replyId} {
+        allow read: if true;
+        allow create: if signedIn() && validReply();
+        allow update: if false;
+        allow delete: if signedIn() && resource.data.authorUid == request.auth.uid;
+      }
+    }
+
+    match /users/{userId}/journal/{entryId} {
+      allow read, delete: if signedIn() && request.auth.uid == userId;
+      allow create: if signedIn() && request.auth.uid == userId && validJournal();
+      allow update: if false;
+    }
+
+    match /{path=**}/reactions/{userId} {
+      allow read: if signedIn() && resource.data.userUid == request.auth.uid;
+    }
+  }
+}

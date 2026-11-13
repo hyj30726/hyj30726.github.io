@@ -3,23 +3,24 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f6f3ed">
-  <meta name="description" content="대학생의 마음을 기록하고 잠시 쉬어가는 공간, 마음의 작은 섬입니다.">
-  <title>마음의 작은 섬</title>
+  <meta name="theme-color" content="#f0eee6">
+  <meta name="description" content="마음을 살펴보고 잠시 쉬어가는 작은 섬, 섬쉼입니다.">
+  <link rel="icon" href="./island-logo.svg" type="image/svg+xml">
+  <title>섬, 쉼</title>
   <style>
     :root {
       color-scheme: light;
       --bg: #f6f3ed;
       --paper: #fffefa;
-      --ink: #263b3b;
-      --muted: #647573;
-      --line: #dce5df;
-      --accent: #527d70;
-      --accent-dark: #365e52;
+      --ink: #303832;
+      --muted: #6f756f;
+      --line: #e4e0d7;
+      --accent: #718a72;
+      --accent-dark: #49624e;
       --soft: #e8f0e9;
       --sand: #f2e7d5;
-      --shadow: 0 16px 42px rgb(38 59 59 / 8%);
-      --serif: Georgia, "Noto Serif KR", serif;
+      --shadow: 0 4px 16px rgb(48 56 50 / 4%);
+      --serif: "Noto Serif KR", Georgia, serif;
       --sans: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
     }
     * { box-sizing: border-box; }
@@ -97,6 +98,112 @@
     .help-list { display: grid; gap: 12px; padding: 0; list-style: none; }
     .help-list li { padding: 16px 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); }
     .help-list strong { display: block; }
+    .brand { display: inline-flex; align-items: center; gap: 9px; }
+    .brand-mark { width: 31px; height: 31px; }
+    .hero .island-art { position: relative; overflow: hidden; min-height: 300px; }
+    .island-art span { position: relative; z-index: 1; }
+    .island-art::before { position: absolute; width: 145px; height: 48px; border-radius: 50%; background: #8cae9a; content: ""; transform: translateY(36px); box-shadow: 0 14px 0 -4px #729481; }
+    .island-art::after { position: absolute; width: 58px; height: 58px; top: 54px; right: 22%; border-radius: 50%; background: #e7c493; content: ""; }
+    .section-kicker { margin: 0 0 5px; color: var(--accent); font-size: 13px; font-weight: 700; letter-spacing: .06em; }
+    .top-three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 0 0 18px; }
+    .top-post { min-width: 0; padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--paper); }
+    .top-post strong { display: block; margin-bottom: 5px; color: var(--accent-dark); font-size: 13px; }
+    .top-post p { display: -webkit-box; overflow: hidden; margin: 0; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+    .stack { display: grid; gap: 14px; }
+    .field { display: grid; gap: 6px; }
+    .field label, .field-label { font-weight: 700; }
+    .field input, .field select, .field textarea { width: 100%; padding: 11px 12px; border: 1px solid var(--line); border-radius: 10px; background: white; color: var(--ink); }
+    .field textarea { min-height: 100px; resize: vertical; }
+    .range-row { display: flex; align-items: center; gap: 12px; }
+    .range-row input { flex: 1; accent-color: var(--accent); }
+    .range-value { min-width: 2.5em; color: var(--accent-dark); font-weight: 700; text-align: center; }
+    .checkin-history { margin-top: 20px; }
+    .chart { width: 100%; min-height: 170px; overflow: visible; }
+    .chart-empty { display: grid; min-height: 120px; place-items: center; border: 1px dashed var(--line); border-radius: 12px; color: var(--muted); text-align: center; }
+    .record-list { display: grid; gap: 8px; margin-top: 12px; }
+    .record-item { display: flex; justify-content: space-between; gap: 12px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+    .post-list { display: grid; gap: 14px; }
+    .post-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 14px; }
+    .text-button { padding: 4px 0; border: 0; background: transparent; color: var(--accent-dark); font-weight: 700; cursor: pointer; }
+    .reply-list { display: grid; gap: 9px; margin-top: 12px; }
+    .reply-item { padding: 10px 12px; border-radius: 10px; background: #f5f7f3; }
+    .reply-item p { margin: 0; }
+    .timer-display { margin: 12px 0; color: var(--accent-dark); font: 700 40px/1.2 var(--serif); font-variant-numeric: tabular-nums; }
+    .timer-controls { display: flex; flex-wrap: wrap; gap: 8px; }
+    .timer-controls button, .secondary-button { min-height: 40px; padding: 7px 12px; border: 1px solid var(--accent); border-radius: 999px; background: white; color: var(--accent-dark); font-weight: 700; cursor: pointer; }
+    .timer-controls button[aria-pressed="true"] { background: var(--soft); }
+    .breath-orb { transition: transform 4s ease-in-out, background-color 4s ease-in-out; }
+    .breath-orb.inhale { transform: scale(1.28); background: #d3e6d9; }
+    .auth-panel { display: grid; gap: 14px; }
+    .auth-dialog { width: min(760px, calc(100% - 28px)); max-height: min(90vh, 760px); overflow-y: auto; padding: 24px; border: 1px solid var(--line); border-radius: 14px; background: var(--bg); color: var(--ink); }
+    .auth-dialog::backdrop { background: rgb(35 42 37 / 55%); backdrop-filter: blur(3px); }
+    .auth-dialog-head { display: flex; align-items: start; justify-content: space-between; gap: 16px; }
+    .auth-dialog-head h2 { margin: 0; }
+    .auth-dialog > p { color: var(--muted); }
+    .auth-dialog-status { min-height: 1.5em; color: var(--muted); font-size: 14px; }
+    .journal-entry { display: flex; justify-content: space-between; align-items: start; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+    .journal-entry p { margin: 4px 0 0; white-space: pre-wrap; }
+    .danger-button { border: 0; background: transparent; color: #8a4c40; text-decoration: underline; cursor: pointer; }
+    .status-line { min-height: 1.5em; color: var(--muted); font-size: 13px; }
+    .urgent { border-color: #e7c9bd !important; background: #fbf1ed !important; }
+    .contact-link { display: inline-block; margin-top: 5px; color: var(--accent-dark); font-weight: 700; }
+    .form-grid.triple { grid-template-columns: repeat(3, 1fr); }
+    .choice input:focus-visible + span { outline: 3px solid #bd8055; outline-offset: 2px; }
+    body { font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+    header { background: var(--bg); backdrop-filter: none; }
+    nav { min-height: 70px; }
+    .brand { display: inline-flex; align-items: center; margin-right: auto; }
+    .brand-mark { display: block; width: 48px; height: 48px; }
+    .hero { padding: 72px 0 68px; background: #f0eee6; }
+    .hero-grid { grid-template-columns: 1fr 240px; gap: 48px; }
+    .eyebrow, .section-kicker { color: #777e70; font-size: 13px; font-weight: 500; letter-spacing: 0; }
+    h1 { font-family: var(--sans); font-size: clamp(38px, 6vw, 58px); font-weight: 600; letter-spacing: -.055em; }
+    h2 { font-family: var(--sans); font-size: clamp(25px, 3vw, 31px); font-weight: 600; letter-spacing: -.035em; }
+    .hero-copy { max-width: 32em; font-size: 16px; }
+    .hero-logo { display: block; width: min(220px, 100%); margin-inline: auto; }
+    .quicklinks { gap: 10px; margin-top: 24px; }
+    .btn { min-height: 42px; padding: 8px 15px; border-radius: 8px; border-color: #c9cfc5; font-size: 14px; font-weight: 600; }
+    .btn:hover { transform: none; }
+    section { padding: 58px 0; }
+    .section-head { margin-bottom: 20px; }
+    .card, .panel { padding: 20px; border-radius: 12px; box-shadow: none; }
+    fieldset { border-radius: 10px; }
+    .choice span { border-radius: 8px; }
+    .form-actions button, .reply-form button { border-radius: 8px; }
+    .notice { border-radius: 10px; }
+    .top-three { margin-bottom: 0; }
+    .top-post { border-radius: 10px; }
+    .setup-note { max-width: 620px; border: 0; border-left: 3px solid #aeb8a9; border-radius: 0; background: transparent; padding: 8px 0 8px 16px; color: var(--muted); }
+    .setup-note strong { margin-bottom: 3px; color: var(--ink); font-weight: 600; }
+    .form-grid.triple { grid-template-columns: repeat(2, 1fr); }
+    .field input[type="range"] { padding: 0; border: 0; background: transparent; }
+    .field input[type="range"] { width: 100%; accent-color: var(--accent-dark); cursor: pointer; }
+    .history-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 14px 0; }
+    .history-toolbar label { font-weight: 600; }
+    .history-toolbar select { min-height: 40px; padding: 7px 30px 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: white; color: var(--ink); }
+    .history-toolbar .secondary-button { margin-left: auto; }
+    .chart-label { fill: var(--muted); font-size: 11px; }
+    .field output { color: var(--accent-dark); font-size: 14px; font-weight: 600; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; clip-path: inset(50%); }
+    .timer-controls button, .secondary-button { border-radius: 8px; }
+    .help-list li { border-radius: 10px; }
+    [hidden] { display: none !important; }
+    @media (max-width: 760px) {
+      .hero-grid { grid-template-columns: 1fr 110px; gap: 18px; }
+      .hero-logo { width: 110px; }
+      .hero { padding: 48px 0; }
+      nav { min-height: 60px; }
+      .brand-mark { width: 42px; height: 42px; }
+      .navlinks { gap: 15px; }
+      .form-grid.triple { grid-template-columns: 1fr; }
+      .auth-dialog { padding: 18px; }
+      .auth-dialog #auth-forms { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 760px) {
+      .top-three { grid-template-columns: 1fr; }
+      .form-grid.triple { grid-template-columns: 1fr; }
+      .hero .island-art { min-height: 210px; }
+    }
     footer { padding: 30px 0 46px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
     footer p { margin: 4px 0; }
     @media (max-width: 760px) {
@@ -111,6 +218,66 @@
       .form-grid { grid-template-columns: 1fr; }
       section { padding: 52px 0; }
     }
+    :root {
+      --bg: #f3f7f2;
+      --paper: #fff;
+      --ink: #263a30;
+      --muted: #68786e;
+      --line: #dce7de;
+      --accent: #6f9a7a;
+      --accent-dark: #365e44;
+      --soft: #e8f3e9;
+      --sand: #fcf1df;
+      --shadow: 0 14px 36px rgb(46 80 57 / 8%);
+    }
+    body { background: linear-gradient(180deg, #f8faf6 0, var(--bg) 42rem); color: var(--ink); }
+    header { background: rgb(248 250 246 / 88%); border-color: rgb(214 227 216 / 85%); backdrop-filter: blur(16px); }
+    nav { min-height: 76px; }
+    .navlinks { gap: 7px; }
+    .navlinks a { padding: 8px 11px; border-radius: 999px; transition: background-color .18s ease, color .18s ease; }
+    .navlinks a:hover { background: var(--soft); color: var(--accent-dark); }
+    #nav-login { min-height: 38px; padding: 6px 14px; border-color: #b8cdbb; background: #fff; }
+    .hero { position: relative; overflow: hidden; padding: clamp(64px, 9vw, 108px) 0; background: radial-gradient(ellipse at 82% 25%, #dcecdf 0, transparent 34%), linear-gradient(135deg, #f8faf6 0, #eef5ed 60%, #f8f3e8 100%); }
+    .hero-grid { min-height: 360px; }
+    .hero h1 { color: #23392d; }
+    .hero-copy { max-width: 34em; line-height: 1.9; }
+    .hero-note { max-width: 42em; }
+    .hero-logo { filter: drop-shadow(0 18px 22px rgb(60 94 68 / 12%)); }
+    .btn { border-radius: 12px; transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease; }
+    .btn.primary { border-color: var(--accent-dark); box-shadow: 0 8px 18px rgb(54 94 68 / 18%); }
+    .btn.primary:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgb(54 94 68 / 24%); }
+    section { border-color: #e1e9e1; }
+    section:nth-of-type(even) { background: rgb(255 255 255 / 54%); }
+    .section-head { max-width: 760px; margin-bottom: 30px; }
+    .section-head h2 { margin-bottom: 10px; letter-spacing: -.045em; }
+    .section-head .lead { line-height: 1.8; }
+    .panel, .card, .top-post { border-color: #e0e9e1; border-radius: 18px; background: var(--paper); box-shadow: var(--shadow); }
+    .panel { transition: transform .18s ease, box-shadow .18s ease; }
+    .panel:hover { transform: translateY(-2px); box-shadow: 0 18px 40px rgb(46 80 57 / 11%); }
+    .setup-note { max-width: 760px; border-left-color: #85aa8e; background: #edf5ed; border-radius: 0 12px 12px 0; }
+    .tag { border-radius: 7px; background: #e9f3e9; }
+    .field input, .field select, .field textarea { border-color: #d7e2d8; border-radius: 11px; transition: border-color .16s ease, box-shadow .16s ease; }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: #78a383; box-shadow: 0 0 0 4px rgb(111 154 122 / 14%); outline: 0; }
+    button { transition: background-color .16s ease, border-color .16s ease, color .16s ease, transform .16s ease; }
+    button:not(:disabled):hover { filter: brightness(.97); }
+    button:disabled { cursor: not-allowed !important; opacity: .58; }
+    .reaction-picker { display: flex; flex-wrap: wrap; gap: 6px; }
+    .reaction-button { display: grid; width: 40px; height: 40px; place-items: center; padding: 0; border: 1px solid #e1e9e2; border-radius: 12px; background: #f8faf7; font-size: 19px; cursor: pointer; }
+    .reaction-button[aria-pressed="true"] { transform: translateY(-2px); border-color: #75a481; background: #e1f1e4; box-shadow: 0 4px 12px rgb(63 116 76 / 16%); }
+    .reaction-total { align-self: center; color: var(--muted); font-size: 13px; font-weight: 600; }
+    .post { padding: 24px; }
+    .post h3 { color: #355a41; }
+    .post-actions { gap: 10px; }
+    .reply-item { border: 1px solid #e5eee5; background: #f7faf6; }
+    .auth-dialog { border-radius: 20px; box-shadow: 0 24px 80px rgb(24 43 31 / 22%); }
+    @media (max-width: 760px) {
+      nav { min-height: 60px; }
+      .hero-grid { min-height: 0; }
+      .hero-logo { width: 132px; }
+      .section-head { margin-bottom: 22px; }
+      .panel:hover { transform: none; }
+      .post { padding: 18px; }
+    }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
   </style>
 </head>
@@ -118,14 +285,14 @@
   <a class="skip" href="#main">본문 바로가기</a>
   <header>
     <nav class="wrap" aria-label="주요 메뉴">
-      <a class="brand" href="#home">마음의 작은 섬</a>
+      <a class="brand" href="#home" aria-label="섬, 쉼 홈"><img class="brand-mark" src="./island-logo.svg" alt="섬, 쉼 로고"></a>
       <div class="navlinks">
-        <a href="#story">나의 이야기</a>
-        <a href="#checkin">마음 체크</a>
-        <a href="#board">익명 이야기</a>
-        <a href="#pause">잠깐 쉬어가기</a>
-        <a href="#help">도움이 필요할 때</a>
+        <a href="#checkin">마음 살피기</a>
+        <a href="#pause">잠시 쉬기</a>
+        <a href="#journal">내 서랍</a>
+        <a href="#help">도움받기</a>
       </div>
+      <button id="nav-login" class="secondary-button" type="button">로그인</button>
     </nav>
   </header>
 
@@ -133,107 +300,201 @@
     <section class="hero" id="home" style="border-top:0">
       <div class="wrap hero-grid">
         <div>
-          <p class="eyebrow">마음이 복잡한 날, 잠시 머물러도 괜찮아요</p>
-          <h1>마음의<br>작은 섬</h1>
-          <p class="hero-copy">대학생으로 지내며 흔들렸던 순간과 다시 일어서는 이야기를 나누고, 서로의 마음에 작은 쉼이 되어주는 공간입니다.</p>
+          <p class="eyebrow">마음이 복잡한 날, 잠깐 쉬어가요</p>
+          <h1>오늘은 조금<br>천천히 가도 괜찮아요.</h1>
+          <p class="hero-copy">마음을 살펴보고, 숨을 고르고, 나만의 기록을 남길 수 있는 작은 공간이에요.</p>
           <div class="quicklinks" aria-label="서비스 바로가기">
-            <a class="btn primary" href="#checkin">오늘의 마음 살펴보기</a>
-            <a class="btn" href="#board">익명으로 이야기 나누기</a>
-            <a class="btn" href="#pause">잠깐 쉬어가기</a>
-            <a class="btn" href="#story">내 이야기 읽기</a>
-            <a class="btn" href="#help">도움받을 곳 찾기</a>
+            <a class="btn primary" href="#checkin">마음 살펴보기</a>
+            <a class="btn" href="#pause">잠깐 쉬기</a>
+            <a class="btn" href="#journal">내 이야기 서랍</a>
           </div>
-          <p class="hero-note">이곳은 개인의 경험을 나누는 공간이며, 전문 상담이나 치료를 대신하지 않아요.</p>
+          <p class="hero-note">필요하다면 언제든 믿을 수 있는 사람이나 전문기관에 도움을 요청해도 괜찮아요.</p>
         </div>
-        <div class="island-art" aria-hidden="true"><span>잠시 머물러도<br>괜찮은 곳</span></div>
-      </div>
-    </section>
-
-    <section id="story">
-      <div class="wrap">
-        <div class="section-head">
-          <h2>나의 이야기</h2>
-          <p class="lead">대학 생활에서 힘들었던 순간과 그때의 마음, 조금이나마 도움이 됐던 일을 나눠요.</p>
-        </div>
-        <div class="cards">
-          <article class="card"><span class="tag">학교생활</span><h3>기대와 현실 사이</h3><p>새로운 환경에서 기대만큼 잘해내지 못한다고 느꼈던 순간을 적어보세요.</p></article>
-          <article class="card"><span class="tag">관계</span><h3>괜찮은 척했던 날</h3><p>사람들 사이에서 마음을 숨기고 싶었던 경험과, 그때 필요했던 말을 나눠요.</p></article>
-          <article class="card"><span class="tag">회복</span><h3>나를 도운 작은 것들</h3><p>산책, 휴식, 대화처럼 나에게 실제로 도움이 되었던 방법을 기록해요.</p></article>
-        </div>
-        <div class="story-placeholder"><p><strong>여기에 유주의 실제 경험이 들어갈 자리예요.</strong> 구체적인 이야기는 네가 편하게 공개할 수 있는 범위에서 직접 채우고, 다른 사람의 사적인 이야기는 동의 없이 포함하지 않도록 해요.</p></div>
+        <img class="hero-logo" src="./island-logo.svg" alt="">
       </div>
     </section>
 
     <section id="checkin">
       <div class="wrap">
         <div class="section-head">
-          <h2>오늘의 마음 살펴보기</h2>
-          <p class="lead">정답을 찾거나 점수를 매기기 위한 설문이 아니에요. 지금 내게 필요한 것을 잠깐 돌아보는 체크인입니다.</p>
+          <h2>오늘 마음 살피기</h2>
+          <p class="lead">정답을 찾는 설문이 아니라, 지금 나에게 필요한 것을 알아보는 짧은 체크인이에요.</p>
         </div>
         <form id="checkin-form" class="panel">
           <div class="form-grid">
-            <fieldset>
-              <legend>오늘 가장 가까운 기분은 무엇인가요?</legend>
-              <div class="choices">
-                <label class="choice"><input type="radio" name="mood" value="tired" required><span>지침</span></label>
-                <label class="choice"><input type="radio" name="mood" value="anxious"><span>불안함</span></label>
-                <label class="choice"><input type="radio" name="mood" value="lonely"><span>외로움</span></label>
-                <label class="choice"><input type="radio" name="mood" value="okay"><span>그럭저럭 괜찮음</span></label>
-              </div>
-            </fieldset>
-            <fieldset>
-              <legend>지금 가장 필요한 것은 무엇인가요?</legend>
-              <div class="choices">
-                <label class="choice"><input type="radio" name="need" value="rest" required><span>잠깐 쉬기</span></label>
-                <label class="choice"><input type="radio" name="need" value="talk"><span>누군가와 이야기하기</span></label>
-                <label class="choice"><input type="radio" name="need" value="organize"><span>마음 정리하기</span></label>
-                <label class="choice"><input type="radio" name="need" value="not-sure"><span>아직 잘 모르겠음</span></label>
-              </div>
-            </fieldset>
+            <div class="field">
+              <label for="checkin-mood">지금 가장 가까운 기분은?</label>
+              <select id="checkin-mood" name="mood" required>
+                <option value="">기분을 골라주세요</option>
+                <option value="tired">지치고 피곤해요</option>
+                <option value="anxious">불안하고 걱정돼요</option>
+                <option value="sad">슬프거나 가라앉아요</option>
+                <option value="lonely">외롭고 쓸쓸해요</option>
+                <option value="angry">답답하거나 화가 나요</option>
+                <option value="overwhelmed">벅차고 정신없어요</option>
+                <option value="empty">멍하고 아무 느낌이 없어요</option>
+                <option value="hopeful">조금 기대되고 설레요</option>
+                <option value="okay">그럭저럭 괜찮아요</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="checkin-cause">마음에 영향을 준 일은?</label>
+              <select id="checkin-cause" name="cause" required>
+                <option value="">가까운 것을 골라주세요</option>
+                <option value="study">공부나 진로</option>
+                <option value="people">친구나 연인 등 관계</option>
+                <option value="family">가족</option>
+                <option value="work">일이나 아르바이트</option>
+                <option value="health">몸이나 건강</option>
+                <option value="money">돈이나 생활</option>
+                <option value="self">나 자신에 대한 생각</option>
+                <option value="other">이유를 잘 모르겠어요</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="checkin-need">지금 나에게 필요한 것은?</label>
+              <select id="checkin-need" name="need" required>
+                <option value="">필요한 것을 골라주세요</option>
+                <option value="rest">아무것도 하지 않고 쉬기</option>
+                <option value="talk">누군가에게 털어놓기</option>
+                <option value="plan">할 일을 작게 정리하기</option>
+                <option value="comfort">위로와 다정한 말</option>
+                <option value="alone">혼자 조용히 있기</option>
+                <option value="move">산책이나 가벼운 움직임</option>
+                <option value="help">전문가와 상담하기</option>
+                <option value="unknown">아직 잘 모르겠어요</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="intensity">오늘 마음의 무게 <output id="intensity-value" for="intensity">3 · 보통</output></label>
+              <input id="intensity" name="intensity" type="range" min="1" max="5" value="3" aria-label="오늘 마음의 무게">
+            </div>
+            <div class="field">
+              <label for="checkin-note">나에게 남기고 싶은 말 (선택)</label>
+              <input id="checkin-note" name="note" type="text" maxlength="160" placeholder="예: 오늘은 여기까지 해도 충분해">
+            </div>
           </div>
           <div class="form-actions">
-            <button type="submit">내 마음 돌아보기</button>
-            <span class="privacy">응답은 저장하거나 전송하지 않고, 이 페이지에서만 결과를 보여줘요.</span>
+            <button type="submit">마음 기록하기</button>
+            <span class="privacy">기록은 이 브라우저에만 저장돼요.</span>
           </div>
           <div id="checkin-result" class="result" role="status" aria-live="polite" hidden></div>
         </form>
-        <p class="small-note">이 체크인은 정신건강 진단 도구가 아니며, 결과만으로 상태를 판단할 수 없어요.</p>
+        <div class="panel checkin-history">
+          <h3>최근 마음 기록</h3>
+          <div class="history-toolbar">
+            <label for="checkin-period">기간</label>
+            <select id="checkin-period">
+              <option value="7">최근 7일</option>
+              <option value="30" selected>최근 30일</option>
+              <option value="90">최근 90일</option>
+              <option value="all">전체 기록</option>
+            </select>
+            <button id="clear-checkins" class="secondary-button" type="button">기록 지우기</button>
+          </div>
+          <div id="checkin-chart"></div>
+          <div id="checkin-records" class="record-list"></div>
+        </div>
+        <p class="small-note">마음 체크는 진단을 대신하지 않아요.</p>
       </div>
     </section>
 
     <section id="board">
       <div class="wrap">
         <div class="section-head">
-          <h2>익명으로 이야기 나누기</h2>
-          <p class="lead">고민과 일상을 나누고 서로 답할 수 있는 게시판을 준비하는 자리예요.</p>
+          <h2>서로의 이야기</h2>
+          <p class="lead">익명으로 마음을 나누는 게시판이에요.</p>
         </div>
-        <div class="board-layout">
-          <div class="notice"><strong>게시판은 서버 연결 후 운영할 수 있어요.</strong>현재 페이지는 정적 HTML 시안이라 글과 댓글이 다른 방문자에게 공유되지 않습니다. 실제 익명 게시판을 열기 전에는 개인정보 보호, 신고·삭제, 운영자 검토 절차를 함께 마련해야 해요.</div>
-          <article class="panel post" aria-label="게시판 화면 예시">
-            <span class="sample-label">화면 예시 · 실제 게시글 아님</span>
-            <div class="post-top"><span>익명 · 학교생활</span><span>예시</span></div>
-            <h3>새 학기가 시작되는데 걱정이 많아요</h3>
-            <p>잘 적응할 수 있을지 조금 불안해요. 비슷한 마음을 느낀 분도 있나요?</p>
-            <form class="reply-form" aria-label="댓글 입력 예시">
-              <label for="reply-example">답글 예시</label>
-              <textarea id="reply-example" placeholder="게시판 연결 후 사용할 수 있어요." disabled></textarea>
-              <button type="button" disabled>댓글 달기</button>
-            </form>
-          </article>
+        <div id="community-status" class="setup-note" role="status"><strong>게시판 연결 준비 중</strong>Firebase 설정 후 공개 게시글과 답글을 이용할 수 있어요.</div>
+        <div id="community-content" hidden>
+          <div class="panel stack" style="margin-top:16px">
+            <h3 style="margin:0">공감 많은 글</h3>
+            <div id="top-posts" class="top-three"></div>
+          </div>
+          <form id="post-form" class="panel stack" style="margin-top:16px">
+            <div class="form-grid">
+              <div class="field"><label for="post-category">이야기 주제</label><select id="post-category" name="category"><option>학교·진로</option><option>관계</option><option>마음·건강</option><option>일상</option><option>기타</option></select></div>
+              <div class="field"><label for="post-content">나누고 싶은 이야기</label><textarea id="post-content" name="content" required minlength="5" maxlength="1000" placeholder="개인정보는 적지 말아주세요."></textarea></div>
+            </div>
+            <div class="form-actions"><button type="submit">익명으로 올리기</button><span class="privacy">게시물은 모두에게 공개돼요.</span></div>
+            <p id="post-status" class="status-line" role="status" aria-live="polite"></p>
+          </form>
+          <div id="post-list" class="post-list" style="margin-top:16px"></div>
+          <p class="small-note">다른 사람을 해치거나 개인정보를 드러내는 글은 올리지 말아주세요.</p>
         </div>
-        <p class="small-note">실제 게시판을 운영할 때는 실명·연락처·학교 및 위치 정보 등 개인정보를 올리지 않도록 안내하고, 악성 글 신고와 관리자 대응 기준을 공개해요.</p>
       </div>
     </section>
+
+    <section id="journal">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>내 이야기 서랍</h2>
+          <p class="lead">마음 일기와 그동안의 기록을 로그인한 나만 볼 수 있어요.</p>
+        </div>
+        <div id="journal-status" class="setup-note" role="status"><strong>일기 연결 준비 중</strong>Firebase 설정 후 계정별 비공개 일기를 사용할 수 있어요.</div>
+        <div id="journal-content" hidden>
+        <div class="panel auth-panel">
+          <div id="journal-account" hidden>
+            <p id="account-label" class="small-note"></p>
+            <button id="logout-button" class="secondary-button" type="button">로그아웃</button>
+          </div>
+        </div>
+        <form id="journal-form" class="panel stack" style="margin-top:16px" hidden>
+          <h3 style="margin:0">오늘의 마음을 기록해요</h3>
+          <div class="form-grid">
+            <div class="field"><label for="journal-date">날짜</label><input id="journal-date" name="date" type="date" required></div>
+            <div class="field"><label for="journal-mood">오늘의 마음</label><select id="journal-mood" name="mood" required><option value="1">1 · 많이 힘들었어요</option><option value="2">2 · 조금 가라앉았어요</option><option value="3" selected>3 · 보통이에요</option><option value="4">4 · 괜찮았어요</option><option value="5">5 · 기분이 좋았어요</option></select></div>
+          </div>
+          <div class="field"><label for="journal-entry-content">나에게 남기는 기록</label><textarea id="journal-entry-content" name="content" required minlength="1" maxlength="5000" placeholder="무슨 일이 있었는지, 어떤 마음이 들었는지 편하게 적어보세요."></textarea></div>
+          <div class="form-actions"><button type="submit">나만의 서랍에 저장</button><span class="privacy">일기는 로그인한 계정의 서버에만 저장됩니다.</span></div>
+        </form>
+        <div id="journal-history" class="panel" style="margin-top:16px" hidden><h3>마음의 흐름</h3><p class="small-note">최근 기록의 기분 점수예요. 점수는 평가가 아니라 돌아보기 위한 표시입니다.</p><div id="journal-chart"></div><h3 style="margin-top:24px">지난 기록</h3><div id="journal-entries"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <dialog id="auth-dialog" class="auth-dialog" aria-labelledby="auth-dialog-title">
+      <div class="auth-dialog-head">
+        <h2 id="auth-dialog-title">로그인하고 마음을 이어가요</h2>
+        <button id="auth-browse" class="secondary-button" type="button">먼저 둘러보기</button>
+      </div>
+      <p>계정에 로그인하면 마음일기를 작성하고 지난 기록을 볼 수 있어요.</p>
+      <p id="auth-dialog-status" class="auth-dialog-status" role="status" aria-live="polite">Firebase 연결을 확인하고 있어요.</p>
+      <div id="auth-forms" class="form-grid">
+        <form id="login-form" class="stack">
+          <h3 style="margin:0">이미 계정이 있어요</h3>
+          <div class="field"><label for="login-email">이메일</label><input id="login-email" name="email" type="email" autocomplete="email" required></div>
+          <div class="field"><label for="login-password">비밀번호</label><input id="login-password" name="password" type="password" autocomplete="current-password" required></div>
+          <button class="secondary-button" type="submit">로그인</button>
+        </form>
+        <form id="signup-form" class="stack">
+          <h3 style="margin:0">처음 오셨나요?</h3>
+          <div class="field"><label for="signup-email">이메일</label><input id="signup-email" name="email" type="email" autocomplete="email" required></div>
+          <div class="field"><label for="signup-password">비밀번호 (6자 이상)</label><input id="signup-password" name="password" type="password" minlength="6" autocomplete="new-password" required></div>
+          <button class="secondary-button" type="submit">계정 만들기</button>
+        </form>
+      </div>
+    </dialog>
 
     <section id="pause">
       <div class="wrap">
         <div class="section-head">
-          <h2>잠깐 쉬어가기</h2>
-          <p class="lead">지금 할 수 있는 작은 것 하나만 골라도 괜찮아요.</p>
+          <h2>잠시 쉬어가기</h2>
+          <p class="lead">불편해지면 언제든 멈춰도 괜찮아요. 편안한 방법 하나만 골라보세요.</p>
         </div>
         <div class="rest-grid">
-          <article class="panel breath"><div class="breath-orb" aria-hidden="true">○</div><div><h3>숨 고르기</h3><p>편한 자세로 앉아 천천히 숨을 들이쉬고 내쉬어 보세요. 불편하면 언제든 멈춰도 괜찮아요.</p></div></article>
-          <article class="panel"><span class="tag">마음 기록 질문</span><h3>오늘 내가 해낸 작은 일은 무엇인가요?</h3><p class="lead">대단한 일이 아니어도 괜찮아요. 하루를 지나온 나에게 한 문장 건네보세요.</p></article>
+          <article class="panel">
+            <span class="tag">호흡 안내</span><h3>천천히 숨 고르기</h3>
+            <div class="breath"><div id="breath-orb" class="breath-orb" aria-hidden="true">○</div><div><p id="breath-instruction" aria-live="polite">준비되면 시작을 눌러요. 편안한 만큼만 호흡해요.</p><p id="breath-time" class="small-note">1분 호흡</p></div></div>
+            <div class="timer-controls" style="margin-top:14px"><button id="breath-start" type="button">호흡 시작</button><button id="breath-stop" type="button">멈추기</button></div>
+          </article>
+          <article class="panel">
+            <span class="tag">쉼표 타이머</span><h3>내가 고른 만큼 쉬기</h3>
+            <div class="timer-controls" aria-label="타이머 길이 선택"><button type="button" data-minutes="1" aria-pressed="false">1분</button><button type="button" data-minutes="3" aria-pressed="true">3분</button><button type="button" data-minutes="5" aria-pressed="false">5분</button></div>
+            <p id="timer-display" class="timer-display" role="timer" aria-live="off">03:00</p>
+            <p id="timer-status" class="small-note" aria-live="polite">잠깐 쉴 준비가 되면 시작해요.</p>
+            <div class="timer-controls"><button id="timer-toggle" type="button">시작</button><button id="timer-reset" type="button">다시 설정</button></div>
+          </article>
         </div>
       </div>
     </section>
@@ -242,53 +503,925 @@
       <div class="wrap">
         <div class="section-head">
           <h2>도움이 필요할 때</h2>
-          <p class="lead">혼자 감당하기 어렵다면 믿을 만한 사람이나 전문적인 도움에 연결되는 것도 괜찮아요.</p>
+          <p class="lead">지금 혼자 감당하기 어렵다면, 사람에게 연결되는 것이 먼저예요.</p>
         </div>
         <ul class="help-list">
-          <li><strong>학교 상담센터</strong>운영 시간과 예약 방법은 국민대학교 공식 안내를 확인해 주세요. 실제 게시 전 최신 연락처와 링크를 확인해 추가해야 합니다.</li>
-          <li><strong>믿을 만한 사람에게 이야기하기</strong>친구, 가족, 지도교수 등 지금 연락하기 편한 사람에게 현재 상태를 알려보세요.</li>
-          <li><strong>즉각적인 위험이 있다고 느끼는 경우</strong>혼자 있지 말고 가까운 사람에게 바로 알리고, 현지 응급 서비스나 전문기관에 즉시 도움을 요청하세요.</li>
+          <li class="urgent"><strong>즉시 위험하거나 긴급한 상황이면 · 112 / 119</strong>자해·자살 위험, 폭력, 응급 의료 상황에서는 혼자 있지 말고 주변 사람에게 알린 뒤 즉시 전화하세요.<br><a class="contact-link" href="tel:112">112 경찰 신고</a> · <a class="contact-link" href="tel:119">119 구급·소방</a></li>
+          <li><strong>자살예방 상담전화 · 109</strong>24시간 자살예방 상담전화입니다. 급박한 위험이 있으면 112·119에 먼저 연락하세요.<br><a class="contact-link" href="tel:109">109 전화 걸기</a> · <a href="https://www.mohw.go.kr/" target="_blank" rel="noopener noreferrer">보건복지부 안내</a></li>
+          <li><strong>정신건강 위기상담 · 1577-0199</strong>정신건강 위기 상담과 지역 정신건강복지센터 안내를 받을 수 있습니다. 운영·연결 방식은 통신 환경에 따라 확인하세요.<br><a class="contact-link" href="tel:15770199">1577-0199 전화 걸기</a></li>
+          <li><strong>학교 상담센터</strong>학교 상담센터의 최신 운영 시간과 예약 방법은 소속 대학 공식 홈페이지에서 확인해 주세요. 학교별 연락처가 확인되지 않은 번호는 임의로 적지 않았어요.</li>
+          <li><strong>믿을 수 있는 사람에게 알리기</strong>“지금 혼자 있으면 힘들 것 같아. 잠깐 같이 있어줄 수 있어?”처럼 구체적으로 부탁해도 괜찮아요.</li>
         </ul>
-        <p class="small-note">이 사이트는 개인 경험과 정보 공유를 위한 공간이며, 심리상담·진단·치료를 제공하지 않습니다.</p>
+        <p class="small-note">전화번호와 서비스 안내는 변경될 수 있으니 공식 안내를 확인해 주세요. 이 웹사이트는 상담·진단·치료를 제공하지 않습니다.</p>
       </div>
     </section>
   </main>
 
   <footer>
     <div class="wrap">
-      <p><strong>마음의 작은 섬</strong> · 마음이 복잡한 날 잠시 머물러 쉬어가는 곳</p>
-      <p>마음 체크 결과는 저장되지 않으며, 익명 게시판은 별도 서버와 안전한 운영 절차가 준비된 뒤에 공개해야 합니다.</p>
+      <p><strong>섬, 쉼</strong> · 마음이 복잡한 날 잠시 머물러 쉬어가는 곳</p>
+      <p>마음 체크는 이 브라우저에만 저장돼요. 개인 일기와 익명 게시판은 Firebase 연결이 필요해요.</p>
     </div>
   </footer>
 
-  <script>
-    const checkinForm = document.querySelector("#checkin-form");
-    const result = document.querySelector("#checkin-result");
-    const messages = {
-      tired: "오늘 에너지가 많이 쓰였나 봐요. 할 일을 잠시 내려놓고 물 한 잔이나 짧은 휴식처럼 부담 없는 것부터 해봐도 괜찮아요.",
-      anxious: "마음이 앞서가고 있을 수 있어요. 지금 당장 해결할 한 가지와 나중에 생각해도 될 일을 나눠 적어보세요.",
-      lonely: "외로운 마음을 혼자 참아야 하는 건 아니에요. 믿을 만한 사람에게 짧게 안부를 건네는 것도 시작이 될 수 있어요.",
-      okay: "그럭저럭 괜찮은 오늘도 소중해요. 지금의 편안함을 만든 것이 무엇인지 잠깐 살펴봐도 좋겠어요."
+  <script type="module">
+    let initializeApp, createUserWithEmailAndPassword, getAuth, onAuthStateChanged;
+    let signInAnonymously, signInWithEmailAndPassword, signOut;
+    let addDoc, collection, collectionGroup, deleteDoc, doc, getDocs, getFirestore, limit;
+    let onSnapshot, orderBy, query, runTransaction, serverTimestamp, where;
+    let firebaseApp;
+    let currentUser;
+    let authDialogDismissed = false;
+    let latestPostSnapshot;
+    let unsubscribeUserReactions;
+    const userReactionsByPost = new Map();
+    const reactionOptions = [
+      { emoji: "💛", label: "따뜻해요" },
+      { emoji: "🤗", label: "안아줘요" },
+      { emoji: "🌱", label: "응원해요" },
+      { emoji: "✨", label: "반짝여요" },
+      { emoji: "🫂", label: "함께해요" },
+      { emoji: "🙏", label: "고마워요" }
+    ];
+    const firebaseConfig = {
+      apiKey: "AIzaSyDOVxMNC5zTbirx2BWrqAHrI7O7YQwvCmY",
+      authDomain: "ureka-28d23.firebaseapp.com",
+      databaseURL: "https://ureka-28d23-default-rtdb.firebaseio.com",
+      projectId: "ureka-28d23",
+      storageBucket: "ureka-28d23.firebasestorage.app",
+      messagingSenderId: "922196105801",
+      appId: "1:922196105801:web:8cad9535bd77bb35e4fd98",
+      measurementId: "G-M7PHKCJ3G0"
     };
+    const firebaseConfigured = Object.values(firebaseConfig).every((value) => value && !value.startsWith("YOUR_"));
+    const checkinForm = document.querySelector("#checkin-form");
+    const checkinResult = document.querySelector("#checkin-result");
+    const checkinChart = document.querySelector("#checkin-chart");
+    const checkinRecords = document.querySelector("#checkin-records");
+    const journalStatus = document.querySelector("#journal-status");
+    const communityStatus = document.querySelector("#community-status");
+    const communityContent = document.querySelector("#community-content");
+    const postStatus = document.querySelector("#post-status");
+    const journalForm = document.querySelector("#journal-form");
+    const journalHistory = document.querySelector("#journal-history");
+    const journalContent = document.querySelector("#journal-content");
+    const authDialog = document.querySelector("#auth-dialog");
+    const authDialogStatus = document.querySelector("#auth-dialog-status");
+    const navLogin = document.querySelector("#nav-login");
+    authDialog.showModal();
+    authDialog.addEventListener("close", () => {
+      if (!currentUser || currentUser.isAnonymous) authDialogDismissed = true;
+    });
+    document.querySelector("#auth-browse").addEventListener("click", () => authDialog.close());
+    navLogin.addEventListener("click", () => {
+      if (!authDialog.open) authDialog.showModal();
+    });
+    const dateToday = () => {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    };
+    document.querySelector("#journal-date").value = dateToday();
+
+    const moodText = {
+      tired: "지금은 의욕을 더 끌어올리기보다 에너지를 아끼는 쪽이 필요해 보여요. 오늘 꼭 해야 하는 일을 하나만 남기고, 나머지는 미뤄도 되는지 살펴보세요.",
+      anxious: "불안은 아직 일어나지 않은 일까지 한꺼번에 해결하려 할 때 커질 수 있어요. 걱정을 종이에 적은 뒤, 오늘 확인할 수 있는 사실과 지금은 알 수 없는 일을 나눠보세요.",
+      sad: "가라앉은 마음을 서둘러 바꾸려 하지 않아도 돼요. 따뜻한 음료나 씻기처럼 몸을 돌보는 작은 행동 하나를 정하고, 가능하면 믿을 만한 사람에게 현재 상태를 알려보세요.",
+      lonely: "외로움은 연결이 필요하다는 신호일 수 있어요. 긴 설명이 부담스럽다면 “오늘 조금 외로워, 안부만 나눌 수 있을까?”처럼 짧게 먼저 말을 건네도 괜찮아요.",
+      angry: "답답함이 크다면 바로 결론 내리기 전에 잠깐 거리를 두어도 좋아요. 무슨 일이 있었는지, 어떤 바람이 지켜지지 않았는지 한 문장씩 적어보세요.",
+      overwhelmed: "한꺼번에 감당할 일이 많게 느껴질 수 있어요. 지금 할 일과 나중에 해도 되는 일을 나누고, 가장 작은 한 가지부터 시작해도 충분해요.",
+      empty: "아무 느낌이 들지 않는 순간도 있어요. 억지로 이유를 찾기보다 물 한 잔 마시기나 잠시 바깥 공기 쐬기처럼 몸이 알아차릴 수 있는 작은 일부터 해보세요.",
+      hopeful: "작은 기대가 생긴 마음을 소중히 여겨도 좋아요. 그 기분을 만든 것이 무엇인지 기억해두고, 부담 없는 만큼 이어가 보세요.",
+      okay: "평온한 순간도 잘 살펴볼 가치가 있어요. 오늘 조금 괜찮았던 이유나 나를 도운 행동을 기억해두면 다음에 흔들릴 때 참고가 될 수 있어요."
+    };
+    const causeText = {
+      study: "공부나 진로가 마음에 걸린다면 오늘 해결할 일을 하나만 정하고, 나머지는 잠시 내려놓아도 괜찮아요.",
+      people: "관계가 마음에 남았다면 상대의 생각을 짐작하기보다, 내가 느낀 감정과 바라는 점부터 살펴보세요.",
+      family: "가족과 관련된 마음도 가볍게 넘길 필요 없어요. 안전하고 편한 사람에게 먼저 털어놓아도 괜찮아요.",
+      work: "일이나 아르바이트로 지쳤다면 잠깐 몸을 쉬게 하고, 혼자 해결하기 어려운 문제는 믿을 만한 사람과 나눠보세요.",
+      health: "몸이나 건강이 걱정된다면 현재 필요한 돌봄을 먼저 챙기고, 증상이 이어지면 의료 전문가와 상담해보세요.",
+      money: "돈이나 생활 문제가 부담스럽다면 혼자 감당하지 말고 학교 학생지원 부서나 공공 지원 창구에 문의해보세요.",
+      self: "나에 대한 생각이 힘들 때는 지금의 감정을 나라는 사람 전체에 대한 평가로 넓히지 않아도 돼요.",
+      other: "이유를 정확히 모르더라도 마음은 살펴볼 가치가 있어요. 수면, 식사, 몸의 긴장처럼 지금 알아차릴 수 있는 것부터 확인해보세요."
+    };
+    const needText = {
+      rest: "지금은 1분 타이머나 짧은 호흡 안내를 켜고, 다음 할 일을 잠시 미뤄보세요. 쉬는 동안 아무것도 해내지 않아도 괜찮아요.",
+      talk: "믿을 수 있는 사람 한 명에게 현재 마음과 원하는 도움을 구체적으로 말해보세요. 해결책보다 들어주길 바란다면 그 점도 함께 알려주세요.",
+      plan: "종이에 ‘지금 할 수 있는 가장 작은 한 걸음’을 하나만 적어보세요. 5~10분 정도로 시작하고, 그 뒤에 계속할지 다시 정하면 됩니다.",
+      comfort: "지금의 감정을 틀렸다고 몰아붙이지 말고, 같은 상황의 친구에게 해줄 말을 나에게도 건네보세요. 오늘 여기까지 온 것만으로도 애쓴 거예요.",
+      alone: "잠깐 혼자 있고 싶다면 알림을 끄고 조용한 시간을 가져도 괜찮아요. 필요할 때 다시 연결할 사람을 한 명 떠올려두세요.",
+      move: "가벼운 움직임이 괜찮게 느껴진다면 창문을 열거나 짧게 걸어보세요. 몸이 불편하면 무리하지 않아도 돼요.",
+      help: "혼자 해결해야 하는 일이 아니에요. 아래 ‘도움이 필요할 때’에서 전화 상담이나 긴급 연락처를 확인하고, 가능한 경우 가까운 사람과 함께 연결해보세요.",
+      unknown: "아직 필요한 것을 모르겠어도 괜찮아요. 물 한 잔 마시기, 자리에서 일어나기, 누군가에게 안부 보내기 중 가장 부담이 적은 하나를 골라보세요."
+    };
+    const moodLabels = {
+      tired: "지치고 피곤해요",
+      anxious: "불안하고 걱정돼요",
+      sad: "슬프거나 가라앉아요",
+      lonely: "외롭고 쓸쓸해요",
+      angry: "답답하거나 화가 나요",
+      overwhelmed: "벅차고 정신없어요",
+      empty: "멍하고 아무 느낌이 없어요",
+      hopeful: "조금 기대되고 설레요",
+      okay: "그럭저럭 괜찮아요"
+    };
+    const causeLabels = {
+      study: "공부나 진로",
+      people: "친구나 연인 등 관계",
+      family: "가족",
+      work: "일이나 아르바이트",
+      health: "몸이나 건강",
+      money: "돈이나 생활",
+      self: "나 자신에 대한 생각",
+      other: "이유를 잘 모르겠어요"
+    };
+    const needLabels = {
+      rest: "아무것도 하지 않고 쉬기",
+      talk: "누군가에게 털어놓기",
+      plan: "할 일을 작게 정리하기",
+      comfort: "위로와 다정한 말",
+      alone: "혼자 조용히 있기",
+      move: "산책이나 가벼운 움직임",
+      help: "전문가와 상담하기",
+      unknown: "아직 잘 모르겠어요"
+    };
+    document.querySelector("#intensity").addEventListener("input", (event) => {
+      const value = Number(event.target.value);
+      const intensityNames = ["아주 가벼움", "가벼움", "보통", "무거움", "아주 무거움"];
+      document.querySelector("#intensity-value").textContent = `${value} · ${intensityNames[value - 1]}`;
+    });
+
+    const checkinStorageKey = "island-checkins-v1";
+    function readCheckins() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(checkinStorageKey) ?? "[]");
+        if (!Array.isArray(saved)) throw new TypeError("체크인 저장 형식이 올바르지 않습니다.");
+        const valid = saved.filter((entry) => entry
+          && typeof entry.date === "string"
+          && moodLabels[entry.mood]
+          && Number.isFinite(Number(entry.intensity))
+          && Number(entry.intensity) >= 1
+          && Number(entry.intensity) <= 5);
+        if (valid.length !== saved.length) {
+          console.warn("일부 형식이 올바르지 않은 마음 기록은 그래프에서 제외했습니다.");
+        }
+        return valid;
+      } catch (error) {
+        console.error("체크인 기록을 읽지 못했습니다.", error);
+        checkinChart.textContent = "이 브라우저에서 저장된 마음 기록을 읽지 못했어요.";
+        return [];
+      }
+    }
+    function drawLineChart(container, entries, valueOf, ariaLabel) {
+      if (!entries.length) {
+        const empty = document.createElement("div");
+        empty.className = "chart-empty";
+        empty.textContent = "이 기간에 기록이 없어요. 기간을 바꾸거나 마음을 기록해보세요.";
+        container.replaceChildren(empty);
+        return;
+      }
+      const width = 560;
+      const height = 170;
+      const left = 32;
+      const right = 18;
+      const top = 14;
+      const bottom = 32;
+      const x = (index) => entries.length === 1 ? width / 2 : left + index * (width - left - right) / (entries.length - 1);
+      const y = (value) => top + (5 - value) * (height - top - bottom) / 4;
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      svg.setAttribute("class", "chart");
+      svg.setAttribute("role", "img");
+      svg.setAttribute("aria-label", ariaLabel);
+      for (let score = 1; score <= 5; score++) {
+        const line = document.createElementNS(svg.namespaceURI, "line");
+        line.setAttribute("x1", String(left));
+        line.setAttribute("x2", String(width - right));
+        line.setAttribute("y1", String(y(score)));
+        line.setAttribute("y2", String(y(score)));
+        line.setAttribute("stroke", "#dce5df");
+        svg.append(line);
+        const axisLabel = document.createElementNS(svg.namespaceURI, "text");
+        axisLabel.setAttribute("x", "14");
+        axisLabel.setAttribute("y", String(y(score) + 4));
+        axisLabel.setAttribute("class", "chart-label");
+        axisLabel.textContent = String(score);
+        svg.append(axisLabel);
+      }
+      const points = entries.map((entry, index) => `${x(index)},${y(valueOf(entry))}`).join(" ");
+      const polyline = document.createElementNS(svg.namespaceURI, "polyline");
+      polyline.setAttribute("points", points);
+      polyline.setAttribute("fill", "none");
+      polyline.setAttribute("stroke", "#527d70");
+      polyline.setAttribute("stroke-width", "3");
+      polyline.setAttribute("stroke-linecap", "round");
+      polyline.setAttribute("stroke-linejoin", "round");
+      svg.append(polyline);
+      entries.forEach((entry, index) => {
+        const dot = document.createElementNS(svg.namespaceURI, "circle");
+        dot.setAttribute("cx", String(x(index)));
+        dot.setAttribute("cy", String(y(valueOf(entry))));
+        dot.setAttribute("r", "5");
+        dot.setAttribute("fill", "#365e52");
+        dot.setAttribute("aria-label", `${entry.date}: ${valueOf(entry)}점`);
+        svg.append(dot);
+        if (entries.length < 8 || index === 0 || index === entries.length - 1 || index % 3 === 0) {
+          const label = document.createElementNS(svg.namespaceURI, "text");
+          label.setAttribute("x", String(x(index)));
+          label.setAttribute("y", String(height - 8));
+          label.setAttribute("text-anchor", "middle");
+          label.setAttribute("fill", "#647573");
+          label.setAttribute("font-size", "10");
+          label.textContent = entry.date.slice(5);
+          svg.append(label);
+        }
+      });
+      container.replaceChildren(svg);
+    }
+    function renderCheckins(entries = readCheckins()) {
+      const period = document.querySelector("#checkin-period").value;
+      const cutoff = period === "all" ? 0 : Date.now() - Number(period) * 24 * 60 * 60 * 1000;
+      const filtered = entries.filter((entry) => {
+        const timestamp = Number(entry.createdAt) || Date.parse(`${entry.date}T23:59:59`);
+        return timestamp >= cutoff;
+      });
+      const recent = filtered.slice(-14);
+      drawLineChart(checkinChart, recent, (entry) => Number(entry.intensity), "최근 마음 강도 기록 그래프");
+      checkinRecords.replaceChildren();
+      filtered.slice(-8).reverse().forEach((entry) => {
+        const row = document.createElement("div");
+        row.className = "record-item";
+        const left = document.createElement("span");
+        left.textContent = `${entry.date} · ${moodLabels[entry.mood] ?? "마음 기록"}`;
+        const right = document.createElement("strong");
+        right.textContent = `강도 ${entry.intensity}/5`;
+        row.append(left, right);
+        checkinRecords.append(row);
+      });
+    }
+    document.querySelector("#checkin-period").addEventListener("change", () => renderCheckins());
+    document.querySelector("#clear-checkins").addEventListener("click", () => {
+      if (!window.confirm("이 브라우저에 저장된 마음 기록을 모두 지울까요?")) return;
+      try {
+        localStorage.removeItem(checkinStorageKey);
+        renderCheckins([]);
+      } catch (error) {
+        console.error("마음 기록을 지우지 못했습니다.", error);
+        checkinChart.textContent = "기록을 지우지 못했어요. 브라우저 설정을 확인해 주세요.";
+      }
+    });
+    renderCheckins();
     checkinForm.addEventListener("submit", (event) => {
       event.preventDefault();
-      const mood = new FormData(checkinForm).get("mood");
-      const need = new FormData(checkinForm).get("need");
-      const needText = {
-        rest: "가능하다면 잠시 쉬어가세요.",
-        talk: "편한 사람에게 지금 마음을 나눠보세요.",
-        organize: "생각을 한 문장씩 적어보는 것도 도움이 될 수 있어요.",
-        "not-sure": "아직 잘 몰라도 괜찮아요. 서두르지 않아도 돼요."
-      }[need];
-      result.replaceChildren();
+      const form = new FormData(checkinForm);
+      const mood = String(form.get("mood"));
+      const cause = String(form.get("cause"));
+      const need = String(form.get("need"));
+      const note = String(form.get("note") ?? "").trim();
+      const entry = {
+        date: dateToday(),
+        createdAt: Date.now(),
+        mood,
+        cause,
+        need,
+        intensity: Number(form.get("intensity")),
+        note
+      };
+      const advice = document.createElement("div");
       const heading = document.createElement("h3");
-      heading.textContent = "지금의 나에게";
-      const paragraph = document.createElement("p");
-      paragraph.textContent = messages[mood] + " " + needText;
-      result.append(heading, paragraph);
-      result.hidden = false;
-      result.focus();
+      heading.textContent = "오늘의 나에게 건네는 말";
+      const first = document.createElement("p");
+      first.textContent = moodText[mood];
+      const second = document.createElement("p");
+      second.textContent = `${causeLabels[cause]}: ${causeText[cause]}`;
+      const third = document.createElement("p");
+      third.textContent = `${needLabels[need]}: ${needText[need]}`;
+      const summary = document.createElement("p");
+      summary.className = "small-note";
+      summary.textContent = `마음의 무게 ${entry.intensity}/5${note ? ` · 나에게: ${note}` : ""}`;
+      advice.append(heading, first, second, third, summary);
+      checkinResult.replaceChildren(advice);
+      checkinResult.hidden = false;
+      const entries = readCheckins();
+      entries.push(entry);
+      try {
+        localStorage.setItem(checkinStorageKey, JSON.stringify(entries.slice(-90)));
+        renderCheckins(entries.slice(-90));
+      } catch (error) {
+        console.error("체크인 기록을 저장하지 못했습니다.", error);
+        const warning = document.createElement("p");
+        warning.textContent = "결과는 만들었지만 브라우저 저장 공간에 기록하지 못했어요. 이 기록은 페이지를 닫으면 사라질 수 있습니다.";
+        checkinResult.append(warning);
+      }
+      checkinResult.focus();
     });
+
+    const minuteButtons = [...document.querySelectorAll("[data-minutes]")];
+    const timerDisplay = document.querySelector("#timer-display");
+    const timerStatus = document.querySelector("#timer-status");
+    const timerToggle = document.querySelector("#timer-toggle");
+    let timerDuration = 180;
+    let timerRemaining = timerDuration;
+    let timerDeadline = 0;
+    let timerInterval;
+    function renderTimer() {
+      const minutes = Math.floor(timerRemaining / 60);
+      const seconds = timerRemaining % 60;
+      timerDisplay.textContent = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    }
+    minuteButtons.forEach((button) => button.addEventListener("click", () => {
+      if (timerInterval) return;
+      minuteButtons.forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+      timerDuration = Number(button.dataset.minutes) * 60;
+      timerRemaining = timerDuration;
+      timerStatus.textContent = `${button.dataset.minutes}분 동안 편안히 쉬어봐요.`;
+      renderTimer();
+    }));
+    timerToggle.addEventListener("click", () => {
+      if (timerInterval) {
+        timerRemaining = Math.max(0, Math.ceil((timerDeadline - Date.now()) / 1000));
+        clearInterval(timerInterval);
+        timerInterval = undefined;
+        timerToggle.textContent = "계속";
+        timerStatus.textContent = "타이머를 잠시 멈췄어요.";
+        renderTimer();
+        return;
+      }
+      if (timerRemaining <= 0) timerRemaining = timerDuration;
+      timerDeadline = Date.now() + timerRemaining * 1000;
+      timerToggle.textContent = "일시정지";
+      timerStatus.textContent = "지금은 잠깐 쉬는 시간이에요.";
+      timerInterval = window.setInterval(() => {
+        timerRemaining = Math.max(0, Math.ceil((timerDeadline - Date.now()) / 1000));
+        renderTimer();
+        if (timerRemaining === 0) {
+          clearInterval(timerInterval);
+          timerInterval = undefined;
+          timerToggle.textContent = "다시 시작";
+          timerStatus.textContent = "쉼표 시간이 끝났어요. 더 쉬어도 괜찮아요.";
+        }
+      }, 250);
+    });
+    document.querySelector("#timer-reset").addEventListener("click", () => {
+      clearInterval(timerInterval);
+      timerInterval = undefined;
+      timerRemaining = timerDuration;
+      timerToggle.textContent = "시작";
+      timerStatus.textContent = "잠깐 쉴 준비가 되면 시작해요.";
+      renderTimer();
+    });
+    renderTimer();
+
+    const breathOrb = document.querySelector("#breath-orb");
+    const breathInstruction = document.querySelector("#breath-instruction");
+    const breathTime = document.querySelector("#breath-time");
+    const breathPhases = [{ name: "천천히 들이쉬어요", seconds: 4, inhale: true }, { name: "천천히 내쉬어요", seconds: 6, inhale: false }];
+    let breathStartedAt = 0;
+    let breathInterval;
+    function stopBreathing(completed = false) {
+      clearInterval(breathInterval);
+      breathInterval = undefined;
+      breathOrb.classList.remove("inhale");
+      breathInstruction.textContent = completed ? "1분 호흡을 마쳤어요. 편안한 속도로 돌아와요." : "호흡 안내를 멈췄어요. 평소 호흡으로 돌아와도 괜찮아요.";
+      breathTime.textContent = "1분 호흡";
+    }
+    document.querySelector("#breath-start").addEventListener("click", () => {
+      if (breathInterval) return;
+      breathStartedAt = Date.now();
+      breathInterval = window.setInterval(() => {
+        const elapsed = Math.floor((Date.now() - breathStartedAt) / 1000);
+        if (elapsed >= 60) {
+          stopBreathing(true);
+          return;
+        }
+        const cycle = elapsed % 10;
+        const phase = cycle < 4 ? breathPhases[0] : breathPhases[1];
+        const remaining = phase.seconds - (phase.inhale ? cycle : cycle - 4);
+        breathInstruction.textContent = `${phase.name} · ${remaining}`;
+        breathTime.textContent = `남은 시간 ${60 - elapsed}초`;
+        breathOrb.classList.toggle("inhale", phase.inhale);
+      }, 250);
+    });
+    document.querySelector("#breath-stop").addEventListener("click", () => stopBreathing());
+
+    let auth;
+    let db;
+    const categoryOptions = ["학교·진로", "관계", "마음·건강", "일상", "기타"];
+    const postForm = document.querySelector("#post-form");
+    const postList = document.querySelector("#post-list");
+    const topPosts = document.querySelector("#top-posts");
+    const authForms = document.querySelector("#auth-forms");
+    const journalAccount = document.querySelector("#journal-account");
+    function setAuthFormsEnabled(enabled) {
+      authForms.querySelectorAll("input, button").forEach((control) => {
+        control.disabled = !enabled;
+      });
+    }
+    setAuthFormsEnabled(false);
+    function setAuthStatus(message) {
+      authDialogStatus.textContent = message;
+      journalStatus.textContent = message;
+    }
+    function authErrorMessage(error, action) {
+      const messages = {
+        "auth/email-already-in-use": "이미 사용 중인 이메일이에요. 기존 계정으로 로그인해 주세요.",
+        "auth/weak-password": "비밀번호는 6자 이상으로 입력해 주세요.",
+        "auth/invalid-email": "이메일 주소를 확인해 주세요.",
+        "auth/operation-not-allowed": "Firebase Console에서 이메일/비밀번호 로그인을 사용 설정해 주세요.",
+        "auth/unauthorized-domain": "현재 주소가 승인되지 않았어요. Firebase Console의 Authentication → 설정 → 승인된 도메인에 브라우저 주소의 호스트를 추가해 주세요.",
+        "auth/network-request-failed": "네트워크 연결을 확인한 뒤 다시 시도해 주세요.",
+        "auth/too-many-requests": "요청이 잠시 제한됐어요. 조금 뒤 다시 시도해 주세요.",
+        "auth/invalid-api-key": "Firebase API 키가 올바르지 않아요. 웹 앱 설정을 확인해 주세요.",
+        "auth/api-key-not-valid": "Firebase API 키가 올바르지 않거나 인증 요청이 제한됐어요. 키 설정을 확인해 주세요.",
+        "auth/invalid-credential": "이메일 또는 비밀번호를 확인해 주세요."
+      };
+      return messages[error.code]
+        ?? `${action === "signup" ? "계정을 만들지 못했어요." : "로그인하지 못했어요."} 오류 코드: ${error.code ?? "unknown"}`;
+    }
+    function setCommunityMessage(title, message) {
+      communityStatus.replaceChildren();
+      const strong = document.createElement("strong");
+      strong.textContent = title;
+      communityStatus.append(strong, document.createTextNode(message));
+    }
+    function disableFirebaseForms() {
+      postForm.querySelector('button[type="submit"]').disabled = true;
+      setAuthFormsEnabled(false);
+    }
+    function formatTimestamp(timestamp) {
+      return timestamp?.toDate ? timestamp.toDate().toLocaleString("ko-KR", { dateStyle: "medium", timeStyle: "short" }) : "방금";
+    }
+    async function renderReplies(postId, container) {
+      if (!db) return;
+      const repliesQuery = query(collection(db, "posts", postId, "replies"), orderBy("createdAt", "asc"), limit(30));
+      const snapshot = await getDocs(repliesQuery);
+      container.replaceChildren();
+      snapshot.forEach((replyDoc) => {
+        const reply = replyDoc.data();
+        const item = document.createElement("div");
+        item.className = "reply-item";
+        const meta = document.createElement("span");
+        meta.className = "small-note";
+        meta.textContent = `익명 이웃 · ${formatTimestamp(reply.createdAt)}`;
+        const text = document.createElement("p");
+        text.textContent = reply.content;
+        item.append(meta, text);
+        container.append(item);
+      });
+    }
+    function createPostCard(postDoc) {
+      const post = postDoc.data();
+      const article = document.createElement("article");
+      article.className = "panel post";
+      const meta = document.createElement("div");
+      meta.className = "post-top";
+      const category = document.createElement("span");
+      category.textContent = `익명 이웃 · ${post.category}`;
+      const created = document.createElement("span");
+      created.textContent = formatTimestamp(post.createdAt);
+      meta.append(category, created);
+      const heading = document.createElement("h3");
+      heading.textContent = post.category;
+      const body = document.createElement("p");
+      body.textContent = post.content;
+      const actions = document.createElement("div");
+      actions.className = "post-actions";
+      const reactionPicker = document.createElement("div");
+      reactionPicker.className = "reaction-picker";
+      reactionPicker.dataset.postId = postDoc.id;
+      const reactionButtons = reactionOptions.map(({ emoji, label }) => {
+        const button = document.createElement("button");
+        button.className = "reaction-button";
+        button.type = "button";
+        button.textContent = emoji;
+        button.title = label;
+        button.dataset.emoji = emoji;
+        button.setAttribute("aria-label", label);
+        button.setAttribute("aria-pressed", String(userReactionsByPost.get(postDoc.id) === emoji));
+        button.addEventListener("click", async () => {
+        if (!currentUser) {
+          postStatus.textContent = "공감 기능을 이용할 수 없어요. 페이지를 새로고침한 뒤 다시 시도해 주세요.";
+          return;
+        }
+        reactionButtons.forEach((reactionButton) => {
+          reactionButton.disabled = true;
+        });
+        const postRef = doc(db, "posts", postDoc.id);
+        const reactionRef = doc(db, "posts", postDoc.id, "reactions", currentUser.uid);
+        try {
+          const result = await runTransaction(db, async (transaction) => {
+            const postSnapshot = await transaction.get(postRef);
+            const reactionSnapshot = await transaction.get(reactionRef);
+            if (!postSnapshot.exists()) throw new Error("게시글을 찾을 수 없습니다.");
+            const count = Number(postSnapshot.data().heartCount) || 0;
+            const existingReaction = reactionSnapshot.exists() ? reactionSnapshot.data() : null;
+            if (existingReaction?.emoji === emoji) {
+              transaction.delete(reactionRef);
+              transaction.update(postRef, { heartCount: Math.max(0, count - 1) });
+              return { emoji: "", count: Math.max(0, count - 1) };
+            } else if (existingReaction) {
+              transaction.update(reactionRef, { userUid: currentUser.uid, emoji });
+              return { emoji, count };
+            } else {
+              transaction.set(reactionRef, { userUid: currentUser.uid, emoji, createdAt: serverTimestamp() });
+              transaction.update(postRef, { heartCount: count + 1 });
+              return { emoji, count: count + 1 };
+            }
+          });
+          if (result.emoji) userReactionsByPost.set(postDoc.id, result.emoji);
+          else userReactionsByPost.delete(postDoc.id);
+          reactionPicker.querySelectorAll(".reaction-button").forEach((reactionButton) => {
+            reactionButton.setAttribute("aria-pressed", String(reactionButton.dataset.emoji === result.emoji));
+          });
+          reactionTotal.textContent = `공감 ${result.count}`;
+        } catch (error) {
+          console.error("공감을 저장하지 못했습니다.", error);
+          postStatus.textContent = "공감을 저장하지 못했어요. 잠시 후 다시 시도해 주세요.";
+        } finally {
+          reactionButtons.forEach((reactionButton) => {
+            reactionButton.disabled = false;
+          });
+        }
+      });
+        reactionPicker.append(button);
+        return button;
+      });
+      const reactionTotal = document.createElement("span");
+      reactionTotal.className = "reaction-total";
+      reactionTotal.textContent = `공감 ${Number(post.heartCount) || 0}`;
+      const replyToggle = document.createElement("button");
+      replyToggle.type = "button";
+      replyToggle.className = "text-button";
+      replyToggle.textContent = "답글 보기 / 쓰기";
+      actions.append(reactionPicker, reactionTotal, replyToggle);
+      const replyArea = document.createElement("div");
+      replyArea.hidden = true;
+      const replies = document.createElement("div");
+      replies.className = "reply-list";
+      const replyForm = document.createElement("form");
+      replyForm.className = "reply-form";
+      const replyLabel = document.createElement("label");
+      replyLabel.textContent = "익명 답글";
+      const replyInput = document.createElement("textarea");
+      replyInput.required = true;
+      replyInput.maxLength = 500;
+      replyInput.placeholder = "개인정보를 쓰지 않고 따뜻한 답글을 남겨주세요.";
+      const replyButton = document.createElement("button");
+      replyButton.type = "submit";
+      replyButton.textContent = "답글 달기";
+      replyForm.append(replyLabel, replyInput, replyButton);
+      replyForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (!currentUser) return;
+        if (!replyInput.value.trim()) {
+          postStatus.textContent = "답글 내용을 입력해 주세요.";
+          return;
+        }
+        replyButton.disabled = true;
+        try {
+          await addDoc(collection(db, "posts", postDoc.id, "replies"), {
+            authorUid: currentUser.uid,
+            content: replyInput.value.trim(),
+            createdAt: serverTimestamp()
+          });
+          replyInput.value = "";
+          await renderReplies(postDoc.id, replies);
+          postStatus.textContent = "익명 답글을 공유했어요.";
+        } catch (error) {
+          console.error("답글을 저장하지 못했습니다.", error);
+          postStatus.textContent = "답글을 저장하지 못했어요. 잠시 후 다시 시도해 주세요.";
+        } finally {
+          replyButton.disabled = false;
+        }
+      });
+      replyToggle.addEventListener("click", async () => {
+        replyArea.hidden = !replyArea.hidden;
+        if (!replyArea.hidden) {
+          try {
+            await renderReplies(postDoc.id, replies);
+          } catch (error) {
+            console.error("답글을 불러오지 못했습니다.", error);
+            replies.textContent = "답글을 불러오지 못했어요.";
+          }
+        }
+      });
+      replyArea.append(replies, replyForm);
+      article.append(meta, heading, body, actions, replyArea);
+      return article;
+    }
+    function renderUserReactionStates() {
+      document.querySelectorAll(".reaction-picker").forEach((picker) => {
+        const selectedEmoji = userReactionsByPost.get(picker.dataset.postId);
+        picker.querySelectorAll(".reaction-button").forEach((button) => {
+          button.setAttribute("aria-pressed", String(button.dataset.emoji === selectedEmoji));
+        });
+      });
+    }
+    function watchUserReactions(user) {
+      unsubscribeUserReactions?.();
+      userReactionsByPost.clear();
+      renderUserReactionStates();
+      if (!db || !user) return;
+      const reactionsQuery = query(
+        collectionGroup(db, "reactions"),
+        where("userUid", "==", user.uid)
+      );
+      unsubscribeUserReactions = onSnapshot(reactionsQuery, (snapshot) => {
+        userReactionsByPost.clear();
+        snapshot.docs.forEach((reactionDoc) => {
+          const postId = reactionDoc.ref.parent.parent?.id;
+          const emoji = reactionDoc.data().emoji;
+          if (postId && reactionOptions.some((reaction) => reaction.emoji === emoji)) {
+            userReactionsByPost.set(postId, emoji);
+          }
+        });
+        renderUserReactionStates();
+      }, (error) => {
+        console.error("내 공감 상태를 불러오지 못했습니다.", error);
+        postStatus.textContent = "선택한 공감 상태를 불러오지 못했어요.";
+      });
+    }
+    async function renderPostFeed(snapshot) {
+      const docs = snapshot.docs;
+      const items = docs.map((postDoc) => ({ postDoc, data: postDoc.data() }));
+      const byHearts = [...items].sort((a, b) => (Number(b.data.heartCount) || 0) - (Number(a.data.heartCount) || 0));
+      topPosts.replaceChildren();
+      if (byHearts.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "top-post";
+        empty.textContent = "아직 나눠진 이야기가 없어요. 첫 마음을 남겨주세요.";
+        topPosts.append(empty);
+      } else {
+        byHearts.slice(0, 3).forEach(({ data }, index) => {
+          const card = document.createElement("article");
+          card.className = "top-post";
+          const position = document.createElement("strong");
+          position.textContent = `${index + 1}위 · 공감 ${Number(data.heartCount) || 0}`;
+          const text = document.createElement("p");
+          text.textContent = data.content;
+          card.append(position, text);
+          topPosts.append(card);
+        });
+      }
+      postList.replaceChildren(...docs.map(createPostCard));
+      if (!docs.length) {
+        const empty = document.createElement("div");
+        empty.className = "panel";
+        empty.textContent = "아직 게시글이 없어요. 첫 이야기를 남겨보세요.";
+        postList.append(empty);
+      }
+    }
+    async function loadJournalEntries(user) {
+      const entriesContainer = document.querySelector("#journal-entries");
+      const journalQuery = query(collection(db, "users", user.uid, "journal"), orderBy("date", "desc"), limit(60));
+      const snapshot = await getDocs(journalQuery);
+      const entries = snapshot.docs.map((entryDoc) => ({ id: entryDoc.id, ...entryDoc.data() }));
+      journalHistory.hidden = false;
+      drawLineChart(document.querySelector("#journal-chart"), [...entries].slice(0, 14).reverse(), (entry) => Number(entry.mood), "최근 마음일기 기분 변화 그래프");
+      entriesContainer.replaceChildren();
+      if (!entries.length) entriesContainer.textContent = "아직 기록이 없어요. 오늘의 마음을 첫 장으로 남겨보세요.";
+      entries.forEach((entry) => {
+        const row = document.createElement("article");
+        row.className = "journal-entry";
+        const content = document.createElement("div");
+        const title = document.createElement("strong");
+        title.textContent = `${entry.date} · 기분 ${entry.mood}/5`;
+        const text = document.createElement("p");
+        text.textContent = entry.content;
+        content.append(title, text);
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "danger-button";
+        remove.textContent = "삭제";
+        remove.addEventListener("click", async () => {
+          if (!window.confirm("이 일기를 영구 삭제할까요?")) return;
+          try {
+            await deleteDoc(doc(db, "users", user.uid, "journal", entry.id));
+            await loadJournalEntries(user);
+            journalStatus.textContent = "일기를 삭제했어요.";
+          } catch (error) {
+            console.error("일기를 삭제하지 못했습니다.", error);
+            journalStatus.textContent = "일기를 삭제하지 못했어요. 잠시 후 다시 시도해 주세요.";
+          }
+        });
+        row.append(content, remove);
+        entriesContainer.append(row);
+      });
+    }
+    function updateJournalView(user) {
+      journalContent.hidden = false;
+      const signedIn = Boolean(user && !user.isAnonymous);
+      authForms.hidden = signedIn;
+      journalAccount.hidden = !signedIn;
+      journalForm.hidden = !signedIn;
+      navLogin.hidden = signedIn;
+      if (signedIn && authDialog.open) authDialog.close();
+      if (!signedIn && !authDialogDismissed && !authDialog.open) authDialog.showModal();
+      journalStatus.textContent = signedIn ? "이 일기는 로그인한 계정에만 저장돼요." : "계정을 만들거나 로그인하면 나만의 일기를 쓸 수 있어요.";
+      if (!signedIn) {
+        journalHistory.hidden = true;
+        document.querySelector("#journal-entries").replaceChildren();
+        document.querySelector("#journal-chart").replaceChildren();
+      } else {
+        document.querySelector("#account-label").textContent = `로그인됨 · ${user.email}`;
+        loadJournalEntries(user).catch((error) => {
+          console.error("마음일기를 불러오지 못했습니다.", error);
+          journalStatus.textContent = "일기를 불러오지 못했어요. Firestore 보안 규칙과 네트워크를 확인해 주세요.";
+        });
+      }
+    }
+    postForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!db || !currentUser) {
+        postStatus.textContent = "Firebase 설정 후 익명 게시판을 사용할 수 있어요.";
+        return;
+      }
+      const content = String(new FormData(postForm).get("content")).trim();
+      const category = String(new FormData(postForm).get("category"));
+      if (content.length < 5 || !categoryOptions.includes(category)) {
+        postStatus.textContent = "주제를 선택하고 5자 이상으로 적어주세요.";
+        return;
+      }
+      const submit = postForm.querySelector('button[type="submit"]');
+      submit.disabled = true;
+      try {
+        await addDoc(collection(db, "posts"), {
+          authorUid: currentUser.uid,
+          category,
+          content,
+          heartCount: 0,
+          createdAt: serverTimestamp()
+        });
+        postForm.reset();
+        postStatus.textContent = "익명으로 이야기를 공유했어요.";
+      } catch (error) {
+        console.error("게시글을 저장하지 못했습니다.", error);
+        postStatus.textContent = "게시글을 저장하지 못했어요. 잠시 후 다시 시도해 주세요.";
+      } finally {
+        submit.disabled = false;
+      }
+    });
+
+    document.querySelector("#signup-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!auth) {
+        setAuthStatus("Firebase 연결을 확인하고 있어요. 잠시 후 다시 시도해 주세요.");
+        return;
+      }
+      const form = new FormData(event.currentTarget);
+      try {
+        await createUserWithEmailAndPassword(auth, String(form.get("email")), String(form.get("password")));
+        setAuthStatus("계정을 만들고 로그인했어요.");
+        event.currentTarget.reset();
+      } catch (error) {
+        console.error("계정을 만들지 못했습니다.", error);
+        setAuthStatus(authErrorMessage(error, "signup"));
+      }
+    });
+    document.querySelector("#login-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!auth) {
+        setAuthStatus("Firebase 연결을 확인하고 있어요. 잠시 후 다시 시도해 주세요.");
+        return;
+      }
+      const form = new FormData(event.currentTarget);
+      try {
+        await signInWithEmailAndPassword(auth, String(form.get("email")), String(form.get("password")));
+        setAuthStatus("로그인했어요.");
+        event.currentTarget.reset();
+      } catch (error) {
+        console.error("로그인하지 못했습니다.", error);
+        setAuthStatus(authErrorMessage(error, "login"));
+      }
+    });
+    document.querySelector("#logout-button").addEventListener("click", async () => {
+      if (!auth) return;
+      try {
+        await signOut(auth);
+        journalStatus.textContent = "로그아웃했어요. 일기 내용은 이 계정의 서버에 남아 있습니다.";
+      } catch (error) {
+        console.error("로그아웃하지 못했습니다.", error);
+        journalStatus.textContent = "로그아웃하지 못했어요. 다시 시도해 주세요.";
+      }
+    });
+    journalForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!db || !currentUser || currentUser.isAnonymous) return;
+      const form = new FormData(journalForm);
+      const entry = {
+        date: String(form.get("date")),
+        mood: Number(form.get("mood")),
+        content: String(form.get("content")).trim()
+      };
+      if (!entry.date || entry.mood < 1 || entry.mood > 5 || !entry.content) {
+        journalStatus.textContent = "날짜, 기분, 기록을 모두 확인해 주세요.";
+        return;
+      }
+      const submit = journalForm.querySelector('button[type="submit"]');
+      submit.disabled = true;
+      try {
+        await addDoc(collection(db, "users", currentUser.uid, "journal"), {
+          ...entry,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+        journalForm.reset();
+        document.querySelector("#journal-date").value = dateToday();
+        document.querySelector("#journal-mood").value = "3";
+        await loadJournalEntries(currentUser);
+        journalStatus.textContent = "마음 서랍에 안전하게 저장했어요.";
+      } catch (error) {
+        console.error("마음일기를 저장하지 못했습니다.", error);
+        journalStatus.textContent = "일기를 저장하지 못했어요. Firestore 보안 규칙과 네트워크를 확인해 주세요.";
+      } finally {
+        submit.disabled = false;
+      }
+    });
+
+    if (!firebaseConfigured) {
+      setCommunityMessage("게시판은 아직 준비 중이에요.", " Firebase 프로젝트를 연결하면 공개 게시글과 답글을 사용할 수 있습니다.");
+      postStatus.textContent = "아직 Firebase 설정 전입니다. 글은 저장되거나 공개되지 않아요.";
+      setAuthStatus("Firebase 연결 전이라 로그인할 수 없어요. 설정이 완료되면 이용할 수 있습니다.");
+      disableFirebaseForms();
+    } else {
+      try {
+        const [appSdk, authSdk] = await Promise.all([
+          import("https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js"),
+          import("https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js")
+        ]);
+        ({ initializeApp } = appSdk);
+        ({ createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInAnonymously, signInWithEmailAndPassword, signOut } = authSdk);
+        firebaseApp = initializeApp(firebaseConfig);
+        auth = getAuth(firebaseApp);
+        setAuthFormsEnabled(true);
+        setAuthStatus("Firebase 인증에 연결됐어요. 로그인하거나 계정을 만들 수 있습니다.");
+        onAuthStateChanged(auth, async (user) => {
+          currentUser = user;
+          const signedIn = Boolean(user && !user.isAnonymous);
+          if (db) {
+            watchUserReactions(user);
+            updateJournalView(user);
+          } else {
+            authForms.hidden = signedIn;
+            navLogin.hidden = signedIn;
+            if (signedIn && authDialog.open) authDialog.close();
+            if (!signedIn && !authDialogDismissed && !authDialog.open) authDialog.showModal();
+          }
+          if (!user) {
+            try {
+              await signInAnonymously(auth);
+            } catch (error) {
+              console.error("익명 인증을 시작하지 못했습니다.", error);
+              setCommunityMessage("익명 인증을 시작하지 못했어요.", " Firebase 콘솔에서 익명 로그인을 사용 설정해 주세요.");
+            }
+          } else if (db) {
+            setCommunityMessage("섬사람 게시판에 연결됐어요.", " 게시글과 답글은 모두에게 공개되고 실시간으로 업데이트됩니다.");
+            postStatus.textContent = "";
+          }
+        });
+      } catch (error) {
+        console.error("Firebase 인증을 초기화하지 못했습니다.", error);
+        setCommunityMessage("Firebase 초기화에 실패했어요.", " 설정값과 Firebase 프로젝트의 웹 앱 등록 상태를 확인해 주세요.");
+        setAuthStatus("Firebase 인증을 불러오지 못했어요. 네트워크와 웹 앱 설정을 확인해 주세요.");
+        disableFirebaseForms();
+      }
+
+      if (auth) {
+        try {
+          const firestoreSdk = await import("https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js");
+          ({ addDoc, collection, collectionGroup, deleteDoc, doc, getDocs, getFirestore, limit, onSnapshot, orderBy, query, runTransaction, serverTimestamp, where } = firestoreSdk);
+          db = getFirestore(firebaseApp);
+          onSnapshot(
+            query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(100)),
+            (snapshot) => {
+              latestPostSnapshot = snapshot;
+              renderPostFeed(snapshot).catch((error) => {
+                console.error("게시판을 표시하지 못했습니다.", error);
+                postStatus.textContent = "게시판을 표시하지 못했어요. Firestore 보안 규칙과 인덱스를 확인해 주세요.";
+              });
+              communityContent.hidden = false;
+              setCommunityMessage("익명 게시판", " 공개 글과 답글을 확인할 수 있어요.");
+            },
+            (error) => {
+              console.error("게시판에 연결하지 못했습니다.", error);
+              communityContent.hidden = true;
+              setCommunityMessage("게시판에 연결하지 못했어요.", " Firebase 설정과 Firestore 보안 규칙을 확인해 주세요.");
+            }
+          );
+          watchUserReactions(currentUser);
+          updateJournalView(currentUser);
+          if (currentUser) {
+            setCommunityMessage("섬사람 게시판에 연결됐어요.", " 게시글과 답글은 모두에게 공개되고 실시간으로 업데이트됩니다.");
+            postStatus.textContent = "";
+          }
+        } catch (error) {
+          console.error("Firebase 데이터 기능을 초기화하지 못했습니다.", error);
+          postForm.querySelector('button[type="submit"]').disabled = true;
+          setCommunityMessage("게시판에 연결하지 못했어요.", " Firestore SDK 연결을 확인해 주세요.");
+          journalStatus.textContent = "마음일기를 연결하지 못했어요. 네트워크와 Firebase 설정을 확인해 주세요.";
+          authDialogStatus.textContent = "로그인은 가능하지만 게시판·마음일기 연결에 문제가 있어요.";
+        }
+      }
+    }
   </script>
 </body>
 </html>

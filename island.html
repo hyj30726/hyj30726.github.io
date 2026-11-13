@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f3ed">
+  <meta name="description" content="대학생의 마음을 기록하고 잠시 쉬어가는 공간, 마음의 작은 섬입니다.">
+  <title>마음의 작은 섬</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f3ed;
+      --paper: #fffefa;
+      --ink: #263b3b;
+      --muted: #647573;
+      --line: #dce5df;
+      --accent: #527d70;
+      --accent-dark: #365e52;
+      --soft: #e8f0e9;
+      --sand: #f2e7d5;
+      --shadow: 0 16px 42px rgb(38 59 59 / 8%);
+      --serif: Georgia, "Noto Serif KR", serif;
+      --sans: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 5.5rem; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.75 var(--sans); }
+    a { color: inherit; }
+    button, input, select, textarea { font: inherit; }
+    :focus-visible { outline: 3px solid #bd8055; outline-offset: 3px; }
+    .wrap { width: min(1060px, calc(100% - 40px)); margin-inline: auto; }
+    .skip { position: absolute; left: -9999px; top: 8px; z-index: 20; padding: 10px; background: white; }
+    .skip:focus { left: 8px; }
+    header { position: sticky; top: 0; z-index: 10; background: rgb(246 243 237 / 94%); border-bottom: 1px solid var(--line); backdrop-filter: blur(12px); }
+    nav { min-height: 64px; display: flex; align-items: center; gap: 24px; }
+    .brand { margin-right: auto; color: var(--accent-dark); font: 700 20px var(--serif); text-decoration: none; white-space: nowrap; }
+    .navlinks { display: flex; gap: 20px; overflow-x: auto; white-space: nowrap; }
+    .navlinks a { color: var(--muted); font-size: 14px; text-decoration: none; }
+    .navlinks a:hover { color: var(--accent-dark); }
+    .hero { padding: 82px 0 64px; background: radial-gradient(ellipse at 82% 18%, #e6eee6 0, transparent 38%), linear-gradient(180deg, #f8f6f0, var(--bg)); }
+    .hero-grid { display: grid; grid-template-columns: 1.2fr .8fr; align-items: center; gap: 52px; }
+    .eyebrow { margin: 0 0 12px; color: var(--accent); font-size: 14px; font-weight: 700; letter-spacing: .08em; }
+    h1, h2, h3 { line-height: 1.35; }
+    h1 { margin: 0; font: 700 clamp(42px, 7vw, 72px)/1.2 var(--serif); letter-spacing: -.04em; }
+    .hero-copy { max-width: 39em; margin: 20px 0 0; color: var(--muted); font-size: 18px; }
+    .hero-note { margin: 12px 0 0; color: var(--muted); font-size: 13px; }
+    .island-art { display: grid; min-height: 260px; place-items: center; border: 1px solid #dfe8df; border-radius: 48% 52% 43% 57% / 53% 42% 58% 47%; background: linear-gradient(150deg, #edf2e8, #e6eee9 55%, #f2e7d5); box-shadow: var(--shadow); }
+    .island-art span { color: var(--accent-dark); font: 700 23px var(--serif); text-align: center; }
+    .quicklinks { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+    .btn { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; padding: 10px 17px; border: 1px solid var(--accent); border-radius: 999px; background: transparent; color: var(--accent-dark); font-weight: 700; text-decoration: none; transition: .18s ease; }
+    .btn:hover { transform: translateY(-2px); background: var(--soft); }
+    .btn.primary { background: var(--accent-dark); color: white; }
+    .btn.primary:hover { background: var(--accent); }
+    section { padding: 68px 0; border-top: 1px solid var(--line); }
+    .section-head { margin-bottom: 26px; }
+    h2 { margin: 0 0 8px; font: 700 clamp(27px, 4vw, 36px) var(--serif); }
+    .lead { max-width: 56em; margin: 0; color: var(--muted); }
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card, .panel { padding: 22px; border: 1px solid var(--line); border-radius: 18px; background: var(--paper); box-shadow: var(--shadow); }
+    .card h3 { margin: 0 0 8px; font-size: 18px; }
+    .card p { margin: 0; color: var(--muted); }
+    .tag { display: inline-block; margin-bottom: 12px; padding: 2px 10px; border-radius: 99px; background: var(--soft); color: var(--accent-dark); font-size: 12px; font-weight: 700; }
+    .story-placeholder { margin-top: 18px; padding: 18px 20px; border-left: 4px solid #c9946f; border-radius: 0 12px 12px 0; background: var(--sand); color: #56483c; }
+    .story-placeholder p { margin: 0; }
+    .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+    fieldset { min-width: 0; margin: 0; padding: 16px; border: 1px solid var(--line); border-radius: 14px; }
+    legend { padding: 0 7px; font-weight: 700; }
+    .choices { display: flex; flex-wrap: wrap; gap: 8px; }
+    .choice { position: relative; }
+    .choice input { position: absolute; opacity: 0; }
+    .choice span { display: inline-flex; min-height: 40px; align-items: center; padding: 7px 12px; border: 1px solid var(--line); border-radius: 999px; background: white; cursor: pointer; }
+    .choice input:checked + span { border-color: var(--accent); background: var(--soft); color: var(--accent-dark); }
+    .choice input:focus-visible + span { outline: 3px solid #bd8055; outline-offset: 2px; }
+    .form-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 18px; }
+    .form-actions button, .reply-form button { min-height: 44px; padding: 9px 17px; border: 0; border-radius: 999px; background: var(--accent-dark); color: white; font-weight: 700; cursor: pointer; }
+    .privacy, .small-note { color: var(--muted); font-size: 13px; }
+    .result { margin-top: 18px; padding: 18px; border-radius: 14px; background: var(--soft); }
+    .result h3 { margin: 0 0 5px; }
+    .result p { margin: 0; }
+    [hidden] { display: none !important; }
+    .board-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
+    .notice { padding: 18px; border: 1px solid #e8d7bf; border-radius: 14px; background: #fbf3e7; color: #574938; }
+    .notice strong { display: block; margin-bottom: 5px; }
+    .post { margin-top: 14px; }
+    .post-top { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 13px; }
+    .post h3 { margin: 8px 0; }
+    .post p { margin: 0; }
+    .sample-label { color: var(--accent-dark); font-size: 12px; font-weight: 700; }
+    .reply-form { display: grid; gap: 9px; margin-top: 14px; }
+    .reply-form input, .reply-form textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: white; color: var(--ink); }
+    .reply-form textarea { min-height: 76px; resize: vertical; }
+    .reply-form button:disabled { background: #9aa8a0; cursor: not-allowed; }
+    .rest-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .breath { display: flex; align-items: center; gap: 18px; }
+    .breath-orb { display: grid; width: 76px; height: 76px; flex: 0 0 76px; place-items: center; border-radius: 50%; background: var(--soft); color: var(--accent-dark); font-size: 28px; }
+    .breath p { margin: 0; color: var(--muted); }
+    .help-list { display: grid; gap: 12px; padding: 0; list-style: none; }
+    .help-list li { padding: 16px 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); }
+    .help-list strong { display: block; }
+    footer { padding: 30px 0 46px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+    footer p { margin: 4px 0; }
+    @media (max-width: 760px) {
+      .wrap { width: min(100% - 28px, 600px); }
+      nav { gap: 14px; flex-wrap: wrap; padding: 12px 0; }
+      .navlinks { order: 2; width: 100%; gap: 17px; }
+      .hero { padding: 54px 0 44px; }
+      .hero-grid, .board-layout, .rest-grid { grid-template-columns: 1fr; }
+      .hero-grid { gap: 28px; }
+      .island-art { min-height: 170px; }
+      .cards { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      section { padding: 52px 0; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">본문 바로가기</a>
+  <header>
+    <nav class="wrap" aria-label="주요 메뉴">
+      <a class="brand" href="#home">마음의 작은 섬</a>
+      <div class="navlinks">
+        <a href="#story">나의 이야기</a>
+        <a href="#checkin">마음 체크</a>
+        <a href="#board">익명 이야기</a>
+        <a href="#pause">잠깐 쉬어가기</a>
+        <a href="#help">도움이 필요할 때</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="home" style="border-top:0">
+      <div class="wrap hero-grid">
+        <div>
+          <p class="eyebrow">마음이 복잡한 날, 잠시 머물러도 괜찮아요</p>
+          <h1>마음의<br>작은 섬</h1>
+          <p class="hero-copy">대학생으로 지내며 흔들렸던 순간과 다시 일어서는 이야기를 나누고, 서로의 마음에 작은 쉼이 되어주는 공간입니다.</p>
+          <div class="quicklinks" aria-label="서비스 바로가기">
+            <a class="btn primary" href="#checkin">오늘의 마음 살펴보기</a>
+            <a class="btn" href="#board">익명으로 이야기 나누기</a>
+            <a class="btn" href="#pause">잠깐 쉬어가기</a>
+            <a class="btn" href="#story">내 이야기 읽기</a>
+            <a class="btn" href="#help">도움받을 곳 찾기</a>
+          </div>
+          <p class="hero-note">이곳은 개인의 경험을 나누는 공간이며, 전문 상담이나 치료를 대신하지 않아요.</p>
+        </div>
+        <div class="island-art" aria-hidden="true"><span>잠시 머물러도<br>괜찮은 곳</span></div>
+      </div>
+    </section>
+
+    <section id="story">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>나의 이야기</h2>
+          <p class="lead">대학 생활에서 힘들었던 순간과 그때의 마음, 조금이나마 도움이 됐던 일을 나눠요.</p>
+        </div>
+        <div class="cards">
+          <article class="card"><span class="tag">학교생활</span><h3>기대와 현실 사이</h3><p>새로운 환경에서 기대만큼 잘해내지 못한다고 느꼈던 순간을 적어보세요.</p></article>
+          <article class="card"><span class="tag">관계</span><h3>괜찮은 척했던 날</h3><p>사람들 사이에서 마음을 숨기고 싶었던 경험과, 그때 필요했던 말을 나눠요.</p></article>
+          <article class="card"><span class="tag">회복</span><h3>나를 도운 작은 것들</h3><p>산책, 휴식, 대화처럼 나에게 실제로 도움이 되었던 방법을 기록해요.</p></article>
+        </div>
+        <div class="story-placeholder"><p><strong>여기에 유주의 실제 경험이 들어갈 자리예요.</strong> 구체적인 이야기는 네가 편하게 공개할 수 있는 범위에서 직접 채우고, 다른 사람의 사적인 이야기는 동의 없이 포함하지 않도록 해요.</p></div>
+      </div>
+    </section>
+
+    <section id="checkin">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>오늘의 마음 살펴보기</h2>
+          <p class="lead">정답을 찾거나 점수를 매기기 위한 설문이 아니에요. 지금 내게 필요한 것을 잠깐 돌아보는 체크인입니다.</p>
+        </div>
+        <form id="checkin-form" class="panel">
+          <div class="form-grid">
+            <fieldset>
+              <legend>오늘 가장 가까운 기분은 무엇인가요?</legend>
+              <div class="choices">
+                <label class="choice"><input type="radio" name="mood" value="tired" required><span>지침</span></label>
+                <label class="choice"><input type="radio" name="mood" value="anxious"><span>불안함</span></label>
+                <label class="choice"><input type="radio" name="mood" value="lonely"><span>외로움</span></label>
+                <label class="choice"><input type="radio" name="mood" value="okay"><span>그럭저럭 괜찮음</span></label>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>지금 가장 필요한 것은 무엇인가요?</legend>
+              <div class="choices">
+                <label class="choice"><input type="radio" name="need" value="rest" required><span>잠깐 쉬기</span></label>
+                <label class="choice"><input type="radio" name="need" value="talk"><span>누군가와 이야기하기</span></label>
+                <label class="choice"><input type="radio" name="need" value="organize"><span>마음 정리하기</span></label>
+                <label class="choice"><input type="radio" name="need" value="not-sure"><span>아직 잘 모르겠음</span></label>
+              </div>
+            </fieldset>
+          </div>
+          <div class="form-actions">
+            <button type="submit">내 마음 돌아보기</button>
+            <span class="privacy">응답은 저장하거나 전송하지 않고, 이 페이지에서만 결과를 보여줘요.</span>
+          </div>
+          <div id="checkin-result" class="result" role="status" aria-live="polite" hidden></div>
+        </form>
+        <p class="small-note">이 체크인은 정신건강 진단 도구가 아니며, 결과만으로 상태를 판단할 수 없어요.</p>
+      </div>
+    </section>
+
+    <section id="board">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>익명으로 이야기 나누기</h2>
+          <p class="lead">고민과 일상을 나누고 서로 답할 수 있는 게시판을 준비하는 자리예요.</p>
+        </div>
+        <div class="board-layout">
+          <div class="notice"><strong>게시판은 서버 연결 후 운영할 수 있어요.</strong>현재 페이지는 정적 HTML 시안이라 글과 댓글이 다른 방문자에게 공유되지 않습니다. 실제 익명 게시판을 열기 전에는 개인정보 보호, 신고·삭제, 운영자 검토 절차를 함께 마련해야 해요.</div>
+          <article class="panel post" aria-label="게시판 화면 예시">
+            <span class="sample-label">화면 예시 · 실제 게시글 아님</span>
+            <div class="post-top"><span>익명 · 학교생활</span><span>예시</span></div>
+            <h3>새 학기가 시작되는데 걱정이 많아요</h3>
+            <p>잘 적응할 수 있을지 조금 불안해요. 비슷한 마음을 느낀 분도 있나요?</p>
+            <form class="reply-form" aria-label="댓글 입력 예시">
+              <label for="reply-example">답글 예시</label>
+              <textarea id="reply-example" placeholder="게시판 연결 후 사용할 수 있어요." disabled></textarea>
+              <button type="button" disabled>댓글 달기</button>
+            </form>
+          </article>
+        </div>
+        <p class="small-note">실제 게시판을 운영할 때는 실명·연락처·학교 및 위치 정보 등 개인정보를 올리지 않도록 안내하고, 악성 글 신고와 관리자 대응 기준을 공개해요.</p>
+      </div>
+    </section>
+
+    <section id="pause">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>잠깐 쉬어가기</h2>
+          <p class="lead">지금 할 수 있는 작은 것 하나만 골라도 괜찮아요.</p>
+        </div>
+        <div class="rest-grid">
+          <article class="panel breath"><div class="breath-orb" aria-hidden="true">○</div><div><h3>숨 고르기</h3><p>편한 자세로 앉아 천천히 숨을 들이쉬고 내쉬어 보세요. 불편하면 언제든 멈춰도 괜찮아요.</p></div></article>
+          <article class="panel"><span class="tag">마음 기록 질문</span><h3>오늘 내가 해낸 작은 일은 무엇인가요?</h3><p class="lead">대단한 일이 아니어도 괜찮아요. 하루를 지나온 나에게 한 문장 건네보세요.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="help">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>도움이 필요할 때</h2>
+          <p class="lead">혼자 감당하기 어렵다면 믿을 만한 사람이나 전문적인 도움에 연결되는 것도 괜찮아요.</p>
+        </div>
+        <ul class="help-list">
+          <li><strong>학교 상담센터</strong>운영 시간과 예약 방법은 국민대학교 공식 안내를 확인해 주세요. 실제 게시 전 최신 연락처와 링크를 확인해 추가해야 합니다.</li>
+          <li><strong>믿을 만한 사람에게 이야기하기</strong>친구, 가족, 지도교수 등 지금 연락하기 편한 사람에게 현재 상태를 알려보세요.</li>
+          <li><strong>즉각적인 위험이 있다고 느끼는 경우</strong>혼자 있지 말고 가까운 사람에게 바로 알리고, 현지 응급 서비스나 전문기관에 즉시 도움을 요청하세요.</li>
+        </ul>
+        <p class="small-note">이 사이트는 개인 경험과 정보 공유를 위한 공간이며, 심리상담·진단·치료를 제공하지 않습니다.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p><strong>마음의 작은 섬</strong> · 마음이 복잡한 날 잠시 머물러 쉬어가는 곳</p>
+      <p>마음 체크 결과는 저장되지 않으며, 익명 게시판은 별도 서버와 안전한 운영 절차가 준비된 뒤에 공개해야 합니다.</p>
+    </div>
+  </footer>
+
+  <script>
+    const checkinForm = document.querySelector("#checkin-form");
+    const result = document.querySelector("#checkin-result");
+    const messages = {
+      tired: "오늘 에너지가 많이 쓰였나 봐요. 할 일을 잠시 내려놓고 물 한 잔이나 짧은 휴식처럼 부담 없는 것부터 해봐도 괜찮아요.",
+      anxious: "마음이 앞서가고 있을 수 있어요. 지금 당장 해결할 한 가지와 나중에 생각해도 될 일을 나눠 적어보세요.",
+      lonely: "외로운 마음을 혼자 참아야 하는 건 아니에요. 믿을 만한 사람에게 짧게 안부를 건네는 것도 시작이 될 수 있어요.",
+      okay: "그럭저럭 괜찮은 오늘도 소중해요. 지금의 편안함을 만든 것이 무엇인지 잠깐 살펴봐도 좋겠어요."
+    };
+    checkinForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const mood = new FormData(checkinForm).get("mood");
+      const need = new FormData(checkinForm).get("need");
+      const needText = {
+        rest: "가능하다면 잠시 쉬어가세요.",
+        talk: "편한 사람에게 지금 마음을 나눠보세요.",
+        organize: "생각을 한 문장씩 적어보는 것도 도움이 될 수 있어요.",
+        "not-sure": "아직 잘 몰라도 괜찮아요. 서두르지 않아도 돼요."
+      }[need];
+      result.replaceChildren();
+      const heading = document.createElement("h3");
+      heading.textContent = "지금의 나에게";
+      const paragraph = document.createElement("p");
+      paragraph.textContent = messages[mood] + " " + needText;
+      result.append(heading, paragraph);
+      result.hidden = false;
+      result.focus();
+    });
+  </script>
+</body>
+</html>

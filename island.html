@@ -121,7 +121,9 @@
     .chart { width: 100%; min-height: 170px; overflow: visible; }
     .chart-empty { display: grid; min-height: 120px; place-items: center; border: 1px dashed var(--line); border-radius: 12px; color: var(--muted); text-align: center; }
     .record-list { display: grid; gap: 8px; margin-top: 12px; }
-    .record-item { display: flex; justify-content: space-between; gap: 12px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+    .record-item { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+    .record-details { min-width: 0; overflow-wrap: anywhere; }
+    .record-details p { margin: 4px 0 0; }
     .post-list { display: grid; gap: 14px; }
     .post-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 14px; }
     .text-button { padding: 4px 0; border: 0; background: transparent; color: var(--accent-dark); font-weight: 700; cursor: pointer; }
@@ -148,6 +150,18 @@
     .urgent { border-color: #e7c9bd !important; background: #fbf1ed !important; }
     .contact-link { display: inline-block; margin-top: 5px; color: var(--accent-dark); font-weight: 700; }
     .form-grid.triple { grid-template-columns: repeat(3, 1fr); }
+    .care-list { display: grid; gap: 10px; padding: 0; list-style: none; }
+    .care-item { display: flex; align-items: start; justify-content: space-between; gap: 14px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); }
+    .care-item p { margin: 4px 0 0; white-space: pre-wrap; }
+    .care-item button { flex: 0 0 auto; padding: 6px 12px; border: 1px solid var(--line); border-radius: 8px; background: white; color: var(--accent-dark); cursor: pointer; }
+    .care-form { margin-bottom: 16px; }
+    .export-status { min-height: 1.5em; margin: 8px 0 0; color: var(--muted); font-size: 13px; }
+    .breath-settings, .toggle-row { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; margin-top: 12px; }
+    .breath-settings label { display: grid; gap: 5px; font-size: 14px; font-weight: 700; }
+    .breath-settings select { min-height: 40px; padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: white; color: var(--ink); }
+    .toggle-row label { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; }
+    .breath-orb { transition: none; }
+    .breath-orb.moving { transition: transform 1s ease-in-out, background-color 1s ease-in-out; }
     .choice input:focus-visible + span { outline: 3px solid #bd8055; outline-offset: 2px; }
     body { font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
     header { background: var(--bg); backdrop-filter: none; }
@@ -289,8 +303,10 @@
       <div class="navlinks">
         <a href="#checkin">마음 살피기</a>
         <a href="#pause">잠시 쉬기</a>
+        <a href="#care">안심 목록</a>
         <a href="#journal">내 서랍</a>
         <a href="#help">도움받기</a>
+        <a href="./index.html">만든 사람 소개</a>
       </div>
       <button id="nav-login" class="secondary-button" type="button">로그인</button>
     </nav>
@@ -306,6 +322,7 @@
           <div class="quicklinks" aria-label="서비스 바로가기">
             <a class="btn primary" href="#checkin">마음 살펴보기</a>
             <a class="btn" href="#pause">잠깐 쉬기</a>
+            <a class="btn" href="#care">나만의 안심 목록</a>
             <a class="btn" href="#journal">내 이야기 서랍</a>
           </div>
           <p class="hero-note">필요하다면 언제든 믿을 수 있는 사람이나 전문기관에 도움을 요청해도 괜찮아요.</p>
@@ -335,7 +352,12 @@
                 <option value="empty">멍하고 아무 느낌이 없어요</option>
                 <option value="hopeful">조금 기대되고 설레요</option>
                 <option value="okay">그럭저럭 괜찮아요</option>
+                <option value="custom">직접 입력</option>
               </select>
+              <div id="checkin-mood-custom-field" class="field" hidden>
+                <label for="checkin-mood-custom">기분을 직접 적어주세요</label>
+                <input id="checkin-mood-custom" name="moodCustom" type="text" maxlength="80" placeholder="예: 안도감과 피곤함이 함께 있어요">
+              </div>
             </div>
             <div class="field">
               <label for="checkin-cause">마음에 영향을 준 일은?</label>
@@ -349,7 +371,12 @@
                 <option value="money">돈이나 생활</option>
                 <option value="self">나 자신에 대한 생각</option>
                 <option value="other">이유를 잘 모르겠어요</option>
+                <option value="custom">직접 입력</option>
               </select>
+              <div id="checkin-cause-custom-field" class="field" hidden>
+                <label for="checkin-cause-custom">마음에 영향을 준 일을 적어주세요</label>
+                <input id="checkin-cause-custom" name="causeCustom" type="text" maxlength="120" placeholder="예: 중요한 발표를 앞두고 있어요">
+              </div>
             </div>
             <div class="field">
               <label for="checkin-need">지금 나에게 필요한 것은?</label>
@@ -363,7 +390,12 @@
                 <option value="move">산책이나 가벼운 움직임</option>
                 <option value="help">전문가와 상담하기</option>
                 <option value="unknown">아직 잘 모르겠어요</option>
+                <option value="custom">직접 입력</option>
               </select>
+              <div id="checkin-need-custom-field" class="field" hidden>
+                <label for="checkin-need-custom">지금 필요한 것을 적어주세요</label>
+                <input id="checkin-need-custom" name="needCustom" type="text" maxlength="120" placeholder="예: 잠깐 혼자 있고 싶어요">
+              </div>
             </div>
             <div class="field">
               <label for="intensity">오늘 마음의 무게 <output id="intensity-value" for="intensity">3 · 보통</output></label>
@@ -376,7 +408,7 @@
           </div>
           <div class="form-actions">
             <button type="submit">마음 기록하기</button>
-            <span class="privacy">기록은 이 브라우저에만 저장돼요.</span>
+            <span class="privacy">직접 입력한 내용도 체크인 기록과 TXT 백업에 포함돼요. 기록은 이 브라우저에 저장돼요.</span>
           </div>
           <div id="checkin-result" class="result" role="status" aria-live="polite" hidden></div>
         </form>
@@ -393,7 +425,10 @@
             <button id="clear-checkins" class="secondary-button" type="button">기록 지우기</button>
           </div>
           <div id="checkin-chart"></div>
+          <p id="checkin-storage-status" class="small-note" role="status" aria-live="polite">체크인 기록은 이 브라우저에만 저장돼요.</p>
           <div id="checkin-records" class="record-list"></div>
+          <button id="export-data" class="secondary-button" type="button">내 기록을 읽기 쉬운 파일로 저장</button>
+          <p id="export-status" class="export-status" role="status" aria-live="polite"></p>
         </div>
         <p class="small-note">마음 체크는 진단을 대신하지 않아요.</p>
       </div>
@@ -453,6 +488,42 @@
       </div>
     </section>
 
+    <section id="care">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>나만의 안심 목록</h2>
+          <p class="lead">힘든 순간에 도움이 될 사람, 해볼 일, 나에게 건네고 싶은 말을 적어둘 수 있어요.</p>
+        </div>
+        <form id="care-form" class="panel care-form stack">
+          <div class="form-grid">
+            <div class="field">
+              <label for="care-category">목록 종류</label>
+              <select id="care-category" name="category">
+                <option value="person">연락할 사람</option>
+                <option value="activity">도움이 된 활동</option>
+                <option value="words">나에게 건네는 말</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="care-title">짧은 제목</label>
+              <input id="care-title" name="title" maxlength="60" required placeholder="예: 편하게 전화할 친구">
+            </div>
+          </div>
+          <div class="field">
+            <label for="care-detail">메모 (선택)</label>
+            <textarea id="care-detail" name="detail" maxlength="240" placeholder="예: 저녁에 통화할 수 있는지 물어보기"></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="submit">안심 목록에 추가</button>
+            <span class="privacy">이 목록은 이 브라우저에만 저장돼요. 민감한 개인정보는 적지 않는 편이 안전해요.</span>
+          </div>
+          <p id="care-status" class="status-line" role="status" aria-live="polite"></p>
+        </form>
+        <ul id="care-list" class="care-list"></ul>
+        <p id="care-empty" class="chart-empty">아직 목록이 비어 있어요. 나에게 맞는 것을 하나씩 적어보세요.</p>
+      </div>
+    </section>
+
     <dialog id="auth-dialog" class="auth-dialog" aria-labelledby="auth-dialog-title">
       <div class="auth-dialog-head">
         <h2 id="auth-dialog-title">로그인하고 마음을 이어가요</h2>
@@ -486,6 +557,25 @@
           <article class="panel">
             <span class="tag">호흡 안내</span><h3>천천히 숨 고르기</h3>
             <div class="breath"><div id="breath-orb" class="breath-orb" aria-hidden="true">○</div><div><p id="breath-instruction" aria-live="polite">준비되면 시작을 눌러요. 편안한 만큼만 호흡해요.</p><p id="breath-time" class="small-note">1분 호흡</p></div></div>
+            <div class="breath-settings">
+              <label for="breath-pace">호흡 속도
+                <select id="breath-pace">
+                  <option value="3-4">편안하게 · 3초 들이쉬고 4초 내쉬기</option>
+                  <option value="4-6" selected>천천히 · 4초 들이쉬고 6초 내쉬기</option>
+                </select>
+              </label>
+              <label for="breath-duration">호흡 시간
+                <select id="breath-duration">
+                  <option value="1">1분</option>
+                  <option value="3">3분</option>
+                  <option value="5">5분</option>
+                </select>
+              </label>
+            </div>
+            <div class="toggle-row">
+              <label><input id="breath-motion" type="checkbox"> 화면 애니메이션 사용</label>
+              <label><input id="breath-sound" type="checkbox"> 안내음 사용 (기본 끔)</label>
+            </div>
             <div class="timer-controls" style="margin-top:14px"><button id="breath-start" type="button">호흡 시작</button><button id="breath-stop" type="button">멈추기</button></div>
           </article>
           <article class="panel">
@@ -506,13 +596,13 @@
           <p class="lead">지금 혼자 감당하기 어렵다면, 사람에게 연결되는 것이 먼저예요.</p>
         </div>
         <ul class="help-list">
-          <li class="urgent"><strong>즉시 위험하거나 긴급한 상황이면 · 112 / 119</strong>자해·자살 위험, 폭력, 응급 의료 상황에서는 혼자 있지 말고 주변 사람에게 알린 뒤 즉시 전화하세요.<br><a class="contact-link" href="tel:112">112 경찰 신고</a> · <a class="contact-link" href="tel:119">119 구급·소방</a></li>
-          <li><strong>자살예방 상담전화 · 109</strong>24시간 자살예방 상담전화입니다. 급박한 위험이 있으면 112·119에 먼저 연락하세요.<br><a class="contact-link" href="tel:109">109 전화 걸기</a> · <a href="https://www.mohw.go.kr/" target="_blank" rel="noopener noreferrer">보건복지부 안내</a></li>
-          <li><strong>정신건강 위기상담 · 1577-0199</strong>정신건강 위기 상담과 지역 정신건강복지센터 안내를 받을 수 있습니다. 운영·연결 방식은 통신 환경에 따라 확인하세요.<br><a class="contact-link" href="tel:15770199">1577-0199 전화 걸기</a></li>
-          <li><strong>학교 상담센터</strong>학교 상담센터의 최신 운영 시간과 예약 방법은 소속 대학 공식 홈페이지에서 확인해 주세요. 학교별 연락처가 확인되지 않은 번호는 임의로 적지 않았어요.</li>
+          <li class="urgent"><strong>지금 당장 위험하거나 다친 사람이 있다면 · 112 / 119</strong>안전한 곳으로 이동하고, 혼자라면 주변 사람에게 지금 위치와 상황을 알려 함께 있어 달라고 부탁하세요. 경찰이 필요하면 112, 구급·화재 등 응급 상황은 119에 전화하세요.<br><a class="contact-link" href="tel:112">112 경찰 신고 전화</a> · <a class="contact-link" href="tel:119">119 구급·소방 전화</a></li>
+          <li><strong>자살 생각이나 위기 마음을 이야기하고 싶다면 · 109</strong>자살예방 상담전화는 24시간 연결돼요. 당장 위험하면 상담을 기다리지 말고 112·119 또는 가까운 응급실에 먼저 연락하세요.<br><a class="contact-link" href="tel:109">109 상담 전화</a> · <a href="https://www.129.go.kr/109/" target="_blank" rel="noopener noreferrer">보건복지상담센터 공식 안내</a></li>
+          <li><strong>정신건강 위기 상담 · 1577-0199</strong>정신건강 위기 상담과 지역 정신건강복지센터 안내를 받을 수 있어요. 자살예방 상담은 109로 연락하세요.<br><a class="contact-link" href="tel:15770199">1577-0199 전화</a></li>
+          <li><strong>국민대학교 학생생활상담센터</strong>학교 상담 예약과 이용 안내는 센터 공식 홈페이지에서 확인할 수 있어요. 긴급한 상황에는 학교 상담 예약보다 112·119·109에 먼저 연결하세요.<br><a class="contact-link" href="https://kmcounsel.kookmin.ac.kr/kmcounsel/index.do" target="_blank" rel="noopener noreferrer">국민대 학생생활상담센터 안내</a></li>
           <li><strong>믿을 수 있는 사람에게 알리기</strong>“지금 혼자 있으면 힘들 것 같아. 잠깐 같이 있어줄 수 있어?”처럼 구체적으로 부탁해도 괜찮아요.</li>
         </ul>
-        <p class="small-note">전화번호와 서비스 안내는 변경될 수 있으니 공식 안내를 확인해 주세요. 이 웹사이트는 상담·진단·치료를 제공하지 않습니다.</p>
+        <p class="small-note">대한민국 기준 안내예요. 통화가 어렵다면 곁에 있는 사람에게 이 화면을 보여주고 대신 전화해 달라고 부탁해도 괜찮아요. 전화번호와 운영 정보는 공식 안내에서 다시 확인해 주세요. 이 웹사이트는 상담·진단·치료를 제공하지 않습니다.</p>
       </div>
     </section>
   </main>
@@ -520,7 +610,8 @@
   <footer>
     <div class="wrap">
       <p><strong>섬, 쉼</strong> · 마음이 복잡한 날 잠시 머물러 쉬어가는 곳</p>
-      <p>마음 체크는 이 브라우저에만 저장돼요. 개인 일기와 익명 게시판은 Firebase 연결이 필요해요.</p>
+      <p>체크인과 안심 목록은 이 브라우저에, 개인 일기는 로그인한 계정에 저장돼요. 게시글과 답글은 익명으로 공유됩니다.</p>
+      <p><a href="./index.html">이 공간을 만든 사람 소개 보기</a></p>
     </div>
   </footer>
 
@@ -558,6 +649,13 @@
     const checkinResult = document.querySelector("#checkin-result");
     const checkinChart = document.querySelector("#checkin-chart");
     const checkinRecords = document.querySelector("#checkin-records");
+    const checkinStorageStatus = document.querySelector("#checkin-storage-status");
+    const exportStatus = document.querySelector("#export-status");
+    const exportButton = document.querySelector("#export-data");
+    const careForm = document.querySelector("#care-form");
+    const careList = document.querySelector("#care-list");
+    const careEmpty = document.querySelector("#care-empty");
+    const careStatus = document.querySelector("#care-status");
     const journalStatus = document.querySelector("#journal-status");
     const communityStatus = document.querySelector("#community-status");
     const communityContent = document.querySelector("#community-content");
@@ -644,6 +742,39 @@
       help: "전문가와 상담하기",
       unknown: "아직 잘 모르겠어요"
     };
+    function checkinLabel(labels, entry, field, fallback) {
+      if (entry[field] === "custom") {
+        return String(entry[`${field}Custom`] ?? "").trim() || "직접 입력";
+      }
+      return Object.hasOwn(labels, entry[field]) ? labels[entry[field]] : fallback;
+    }
+
+    function hasCheckinChoice(labels, entry, field) {
+      return Object.hasOwn(labels, entry[field])
+        || entry[field] === "custom"
+          && typeof entry[`${field}Custom`] === "string"
+          && Boolean(entry[`${field}Custom`].trim());
+    }
+
+    function connectCustomInput(selectId, fieldId, inputId) {
+      const select = document.querySelector(`#${selectId}`);
+      const field = document.querySelector(`#${fieldId}`);
+      const input = document.querySelector(`#${inputId}`);
+      const update = () => {
+        const isCustom = select.value === "custom";
+        field.hidden = !isCustom;
+        input.required = isCustom;
+        input.setCustomValidity(isCustom && !input.value.trim() ? "직접 입력 내용을 적어주세요." : "");
+      };
+      select.addEventListener("change", update);
+      input.addEventListener("input", update);
+      update();
+    }
+
+    connectCustomInput("checkin-mood", "checkin-mood-custom-field", "checkin-mood-custom");
+    connectCustomInput("checkin-cause", "checkin-cause-custom-field", "checkin-cause-custom");
+    connectCustomInput("checkin-need", "checkin-need-custom-field", "checkin-need-custom");
+
     document.querySelector("#intensity").addEventListener("input", (event) => {
       const value = Number(event.target.value);
       const intensityNames = ["아주 가벼움", "가벼움", "보통", "무거움", "아주 무거움"];
@@ -651,13 +782,61 @@
     });
 
     const checkinStorageKey = "island-checkins-v1";
+    const previousCheckinStorageKey = "small-island-checkins-v1";
+    const careStorageKey = "small-island-care-list-v1";
+    const careCategoryLabels = {
+      person: "연락할 사람",
+      activity: "도움이 된 활동",
+      words: "나에게 건네는 말"
+    };
+    let careItems = [];
+    let careStorageReady = true;
+    let checkinStorageReady = true;
+
+    function migratePreviousCheckins(entries) {
+      const raw = localStorage.getItem(previousCheckinStorageKey);
+      if (raw === null) return entries;
+      const previousEntries = JSON.parse(raw);
+      if (!Array.isArray(previousEntries)) {
+        throw new TypeError("이전 마음 기록 형식이 올바르지 않습니다.");
+      }
+      const needAliases = { organize: "plan", "not-sure": "unknown" };
+      const migrated = previousEntries.map((entry) => {
+        if (!entry || !Object.hasOwn(moodLabels, entry.mood)) {
+          throw new TypeError("이전 마음 기록을 안전하게 옮기지 못했습니다.");
+        }
+        const createdAt = new Date(entry.createdAt);
+        if (Number.isNaN(createdAt.getTime())) {
+          throw new TypeError("이전 마음 기록을 안전하게 옮기지 못했습니다.");
+        }
+        const need = Object.hasOwn(needAliases, entry.need) ? needAliases[entry.need] : entry.need;
+        return {
+          date: createdAt.toISOString().slice(0, 10),
+          createdAt: createdAt.getTime(),
+          mood: entry.mood,
+          cause: "other",
+          need: Object.hasOwn(needLabels, need) ? need : "unknown",
+          intensity: 3,
+          note: ""
+        };
+      });
+      const combined = [...entries, ...migrated].sort((a, b) =>
+        (Number(a.createdAt) || Date.parse(a.date)) - (Number(b.createdAt) || Date.parse(b.date)));
+      localStorage.setItem(checkinStorageKey, JSON.stringify(combined));
+      localStorage.removeItem(previousCheckinStorageKey);
+      checkinStorageStatus.textContent = "이전 체크인 기록을 옮겼어요. 저장된 내용은 이 브라우저에 남아 있습니다.";
+      return combined;
+    }
+
     function readCheckins() {
       try {
         const saved = JSON.parse(localStorage.getItem(checkinStorageKey) ?? "[]");
         if (!Array.isArray(saved)) throw new TypeError("체크인 저장 형식이 올바르지 않습니다.");
-        const valid = saved.filter((entry) => entry
+        const valid = migratePreviousCheckins(saved).filter((entry) => entry
           && typeof entry.date === "string"
-          && moodLabels[entry.mood]
+          && hasCheckinChoice(moodLabels, entry, "mood")
+          && hasCheckinChoice(causeLabels, entry, "cause")
+          && hasCheckinChoice(needLabels, entry, "need")
           && Number.isFinite(Number(entry.intensity))
           && Number(entry.intensity) >= 1
           && Number(entry.intensity) <= 5);
@@ -666,11 +845,103 @@
         }
         return valid;
       } catch (error) {
+        checkinStorageReady = false;
         console.error("체크인 기록을 읽지 못했습니다.", error);
-        checkinChart.textContent = "이 브라우저에서 저장된 마음 기록을 읽지 못했어요.";
+        checkinStorageStatus.textContent = "저장된 마음 기록을 읽지 못했어요. 기존 데이터를 덮어쓰지 않았습니다.";
         return [];
       }
     }
+
+    function readCareItems() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(careStorageKey) ?? "[]");
+        if (!Array.isArray(saved) || !saved.every((entry) =>
+          entry && typeof entry.id === "string" &&
+          Object.hasOwn(careCategoryLabels, entry.category) &&
+          typeof entry.title === "string" && typeof entry.detail === "string")) {
+          throw new TypeError("안심 목록 저장 형식이 올바르지 않습니다.");
+        }
+        return saved;
+      } catch (error) {
+        careStorageReady = false;
+        console.error("안심 목록을 읽지 못했습니다.", error);
+        careStatus.textContent = "안심 목록을 읽지 못했어요. 기존 데이터를 덮어쓰지 않았습니다.";
+        return [];
+      }
+    }
+
+    function renderCareItems() {
+      careList.replaceChildren();
+      careEmpty.hidden = careItems.length > 0;
+      careItems.slice().reverse().forEach((entry) => {
+        const item = document.createElement("li");
+        item.className = "care-item";
+        const content = document.createElement("div");
+        const category = document.createElement("strong");
+        category.textContent = careCategoryLabels[entry.category];
+        const title = document.createElement("p");
+        title.textContent = entry.title;
+        content.append(category, title);
+        if (entry.detail) {
+          const detail = document.createElement("p");
+          detail.textContent = entry.detail;
+          content.append(detail);
+        }
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.textContent = "삭제";
+        remove.setAttribute("aria-label", `${entry.title} 삭제`);
+        remove.addEventListener("click", () => {
+          const updated = careItems.filter((itemEntry) => itemEntry.id !== entry.id);
+          if (persistCareItems(updated)) {
+            careItems = updated;
+            renderCareItems();
+            careStatus.textContent = "안심 목록에서 삭제했어요.";
+          }
+        });
+        item.append(content, remove);
+        careList.append(item);
+      });
+    }
+
+    function persistCareItems(entries) {
+      if (!careStorageReady) {
+        careStatus.textContent = "저장된 안심 목록을 읽지 못해 변경할 수 없어요.";
+        return false;
+      }
+      try {
+        localStorage.setItem(careStorageKey, JSON.stringify(entries));
+        return true;
+      } catch (error) {
+        console.error("안심 목록을 저장하지 못했습니다.", error);
+        careStatus.textContent = "브라우저 저장 공간에 저장하지 못했어요. 설정이나 저장 공간을 확인해 주세요.";
+        return false;
+      }
+    }
+
+    careItems = readCareItems();
+    renderCareItems();
+    careForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const form = new FormData(careForm);
+      const category = String(form.get("category"));
+      const title = String(form.get("title")).trim();
+      const detail = String(form.get("detail")).trim();
+      if (!title || !Object.hasOwn(careCategoryLabels, category)) return;
+      const entry = {
+        id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        category,
+        title,
+        detail
+      };
+      const updated = [...careItems, entry];
+      if (persistCareItems(updated)) {
+        careItems = updated;
+        renderCareItems();
+        careForm.reset();
+        careStatus.textContent = "안심 목록에 저장했어요. 이 브라우저에서만 확인할 수 있습니다.";
+      }
+    });
     function drawLineChart(container, entries, valueOf, ariaLabel) {
       if (!entries.length) {
         const empty = document.createElement("div");
@@ -750,11 +1021,17 @@
       filtered.slice(-8).reverse().forEach((entry) => {
         const row = document.createElement("div");
         row.className = "record-item";
-        const left = document.createElement("span");
-        left.textContent = `${entry.date} · ${moodLabels[entry.mood] ?? "마음 기록"}`;
+        const details = document.createElement("div");
+        details.className = "record-details";
+        const heading = document.createElement("div");
+        heading.textContent = `${entry.date} · ${checkinLabel(moodLabels, entry, "mood", "마음 기록")}`;
+        const description = document.createElement("p");
+        description.className = "small-note";
+        description.textContent = `영향을 준 일: ${checkinLabel(causeLabels, entry, "cause", "기록 없음")} · 필요한 것: ${checkinLabel(needLabels, entry, "need", "기록 없음")}${entry.note ? ` · 나에게: ${entry.note}` : ""}`;
+        details.append(heading, description);
         const right = document.createElement("strong");
         right.textContent = `강도 ${entry.intensity}/5`;
-        row.append(left, right);
+        row.append(details, right);
         checkinRecords.append(row);
       });
     }
@@ -763,10 +1040,12 @@
       if (!window.confirm("이 브라우저에 저장된 마음 기록을 모두 지울까요?")) return;
       try {
         localStorage.removeItem(checkinStorageKey);
+        localStorage.removeItem(previousCheckinStorageKey);
         renderCheckins([]);
+        checkinStorageStatus.textContent = "이 브라우저의 마음 기록을 모두 지웠어요.";
       } catch (error) {
         console.error("마음 기록을 지우지 못했습니다.", error);
-        checkinChart.textContent = "기록을 지우지 못했어요. 브라우저 설정을 확인해 주세요.";
+        checkinStorageStatus.textContent = "기록을 지우지 못했어요. 브라우저 설정을 확인해 주세요.";
       }
     });
     renderCheckins();
@@ -776,6 +1055,9 @@
       const mood = String(form.get("mood"));
       const cause = String(form.get("cause"));
       const need = String(form.get("need"));
+      const moodCustom = String(form.get("moodCustom") ?? "").trim();
+      const causeCustom = String(form.get("causeCustom") ?? "").trim();
+      const needCustom = String(form.get("needCustom") ?? "").trim();
       const note = String(form.get("note") ?? "").trim();
       const entry = {
         date: dateToday(),
@@ -783,18 +1065,24 @@
         mood,
         cause,
         need,
+        ...(mood === "custom" ? { moodCustom } : {}),
+        ...(cause === "custom" ? { causeCustom } : {}),
+        ...(need === "custom" ? { needCustom } : {}),
         intensity: Number(form.get("intensity")),
         note
       };
+      const moodLabel = checkinLabel(moodLabels, entry, "mood", "지금의 마음");
+      const causeLabel = checkinLabel(causeLabels, entry, "cause", "영향을 준 일");
+      const needLabel = checkinLabel(needLabels, entry, "need", "필요한 것");
       const advice = document.createElement("div");
       const heading = document.createElement("h3");
       heading.textContent = "오늘의 나에게 건네는 말";
       const first = document.createElement("p");
-      first.textContent = moodText[mood];
+      first.textContent = moodText[mood] ?? `지금의 기분을 "${moodLabel}"이라고 표현했어요. 그 마음을 있는 그대로 알아차려도 괜찮아요.`;
       const second = document.createElement("p");
-      second.textContent = `${causeLabels[cause]}: ${causeText[cause]}`;
+      second.textContent = `${causeLabel}: ${causeText[cause] ?? "마음에 영향을 준 일을 살펴본 것만으로도 지금의 나를 이해하는 데 도움이 돼요."}`;
       const third = document.createElement("p");
-      third.textContent = `${needLabels[need]}: ${needText[need]}`;
+      third.textContent = `${needLabel}: ${needText[need] ?? "지금 직접 적어준 필요를 작게라도 존중해보세요."}`;
       const summary = document.createElement("p");
       summary.className = "small-note";
       summary.textContent = `마음의 무게 ${entry.intensity}/5${note ? ` · 나에게: ${note}` : ""}`;
@@ -802,12 +1090,21 @@
       checkinResult.replaceChildren(advice);
       checkinResult.hidden = false;
       const entries = readCheckins();
+      if (!checkinStorageReady) {
+        const warning = document.createElement("p");
+        warning.textContent = "결과는 만들었지만 기존 기록을 보호하기 위해 저장하지 않았어요.";
+        checkinResult.append(warning);
+        checkinResult.focus();
+        return;
+      }
       entries.push(entry);
       try {
-        localStorage.setItem(checkinStorageKey, JSON.stringify(entries.slice(-90)));
-        renderCheckins(entries.slice(-90));
+        localStorage.setItem(checkinStorageKey, JSON.stringify(entries));
+        renderCheckins(entries);
+        checkinStorageStatus.textContent = "마음 기록을 이 브라우저에 저장했어요.";
       } catch (error) {
         console.error("체크인 기록을 저장하지 못했습니다.", error);
+        checkinStorageStatus.textContent = "마음 기록을 저장하지 못했어요. 브라우저 설정이나 저장 공간을 확인해 주세요.";
         const warning = document.createElement("p");
         warning.textContent = "결과는 만들었지만 브라우저 저장 공간에 기록하지 못했어요. 이 기록은 페이지를 닫으면 사라질 수 있습니다.";
         checkinResult.append(warning);
@@ -874,37 +1171,235 @@
     const breathOrb = document.querySelector("#breath-orb");
     const breathInstruction = document.querySelector("#breath-instruction");
     const breathTime = document.querySelector("#breath-time");
-    const breathPhases = [{ name: "천천히 들이쉬어요", seconds: 4, inhale: true }, { name: "천천히 내쉬어요", seconds: 6, inhale: false }];
+    const breathPace = document.querySelector("#breath-pace");
+    const breathDuration = document.querySelector("#breath-duration");
+    const breathMotion = document.querySelector("#breath-motion");
+    const breathSound = document.querySelector("#breath-sound");
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    breathMotion.checked = !prefersReducedMotion.matches;
     let breathStartedAt = 0;
     let breathInterval;
+    let breathAudioContext;
+    let currentBreathPhase = "";
+
     function stopBreathing(completed = false) {
       clearInterval(breathInterval);
       breathInterval = undefined;
-      breathOrb.classList.remove("inhale");
-      breathInstruction.textContent = completed ? "1분 호흡을 마쳤어요. 편안한 속도로 돌아와요." : "호흡 안내를 멈췄어요. 평소 호흡으로 돌아와도 괜찮아요.";
-      breathTime.textContent = "1분 호흡";
+      currentBreathPhase = "";
+      breathOrb.classList.remove("inhale", "moving");
+      breathOrb.style.removeProperty("transition-duration");
+      breathPace.disabled = false;
+      breathDuration.disabled = false;
+      breathInstruction.textContent = completed ? "선택한 호흡을 마쳤어요. 편안한 평소 호흡으로 돌아와요." : "호흡 안내를 멈췄어요. 평소 호흡으로 돌아와도 괜찮아요.";
+      breathTime.textContent = completed ? `${breathDuration.value}분 호흡을 마쳤어요.` : "호흡은 원할 때 언제든 멈출 수 있어요.";
     }
+
+    function playBreathTone() {
+      if (!breathSound.checked) return;
+      try {
+        breathAudioContext ||= new AudioContext();
+        const oscillator = breathAudioContext.createOscillator();
+        const gain = breathAudioContext.createGain();
+        oscillator.frequency.value = 520;
+        gain.gain.setValueAtTime(0.04, breathAudioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, breathAudioContext.currentTime + 0.12);
+        oscillator.connect(gain);
+        gain.connect(breathAudioContext.destination);
+        oscillator.start();
+        oscillator.stop(breathAudioContext.currentTime + 0.12);
+      } catch (error) {
+        console.error("호흡 안내음을 재생하지 못했습니다.", error);
+        breathSound.checked = false;
+        breathInstruction.textContent = "안내음을 재생할 수 없어요. 화면 안내는 계속 사용할 수 있습니다.";
+      }
+    }
+
+    function updateBreathing() {
+      const [inhale, exhale] = breathPace.value.split("-").map(Number);
+      const duration = Number(breathDuration.value) * 60;
+      const elapsed = Math.floor((Date.now() - breathStartedAt) / 1000);
+      if (elapsed >= duration) {
+        stopBreathing(true);
+        return;
+      }
+      const phaseTime = elapsed % (inhale + exhale);
+      const isInhaling = phaseTime < inhale;
+      const phase = isInhaling ? "들이쉬어요" : "내쉬어요";
+      breathOrb.style.transitionDuration = `${isInhaling ? inhale : exhale}s`;
+      breathOrb.classList.toggle("inhale", isInhaling);
+      breathTime.textContent = `남은 시간 ${Math.floor((duration - elapsed) / 60)}:${String((duration - elapsed) % 60).padStart(2, "0")}`;
+      if (phase !== currentBreathPhase) {
+        currentBreathPhase = phase;
+        breathInstruction.textContent = `천천히 ${phase}`;
+        playBreathTone();
+      }
+    }
+
+    breathMotion.addEventListener("change", () => {
+      breathOrb.classList.toggle("moving", breathMotion.checked);
+    });
+
     document.querySelector("#breath-start").addEventListener("click", () => {
       if (breathInterval) return;
+      breathOrb.classList.toggle("moving", breathMotion.checked);
+      breathPace.disabled = true;
+      breathDuration.disabled = true;
       breathStartedAt = Date.now();
-      breathInterval = window.setInterval(() => {
-        const elapsed = Math.floor((Date.now() - breathStartedAt) / 1000);
-        if (elapsed >= 60) {
-          stopBreathing(true);
-          return;
-        }
-        const cycle = elapsed % 10;
-        const phase = cycle < 4 ? breathPhases[0] : breathPhases[1];
-        const remaining = phase.seconds - (phase.inhale ? cycle : cycle - 4);
-        breathInstruction.textContent = `${phase.name} · ${remaining}`;
-        breathTime.textContent = `남은 시간 ${60 - elapsed}초`;
-        breathOrb.classList.toggle("inhale", phase.inhale);
-      }, 250);
+      updateBreathing();
+      breathInterval = window.setInterval(updateBreathing, 250);
     });
     document.querySelector("#breath-stop").addEventListener("click", () => stopBreathing());
 
     let auth;
     let db;
+    function formatExportDate(value) {
+      const date = value?.toDate ? value.toDate() : new Date(value);
+      return Number.isNaN(date.getTime())
+        ? "날짜 정보 없음"
+        : date.toLocaleString("ko-KR", { dateStyle: "medium", timeStyle: "short" });
+    }
+
+    exportButton.addEventListener("click", async () => {
+      exportButton.disabled = true;
+      exportStatus.textContent = "내 기록을 정리하고 있어요.";
+      const warnings = [];
+      let journalEntries = [];
+      let myPosts = [];
+      let myReplies = [];
+      const checkins = readCheckins();
+
+      if (db && currentUser) {
+        const journalRequest = currentUser.isAnonymous
+          ? Promise.resolve(null)
+          : getDocs(query(collection(db, "users", currentUser.uid, "journal"), orderBy("date", "desc")));
+        const [journalResult, postsResult, repliesResult] = await Promise.allSettled([
+          journalRequest,
+          getDocs(query(collection(db, "posts"), where("authorUid", "==", currentUser.uid))),
+          getDocs(query(collectionGroup(db, "replies"), where("authorUid", "==", currentUser.uid)))
+        ]);
+        if (journalResult.status === "fulfilled" && journalResult.value) {
+          journalEntries = journalResult.value.docs.map((entryDoc) => entryDoc.data());
+        } else if (currentUser.isAnonymous) {
+          warnings.push("비공개 일기는 로그인한 계정으로 내보낼 때 포함됩니다.");
+        } else {
+          console.error("내 일기를 내보내지 못했습니다.", journalResult.reason);
+          warnings.push("계정 일기를 불러오지 못했습니다.");
+        }
+        if (postsResult.status === "fulfilled") {
+          myPosts = postsResult.value.docs.map((postDoc) => postDoc.data());
+        } else {
+          console.error("내 게시글을 내보내지 못했습니다.", postsResult.reason);
+          warnings.push("내가 쓴 게시글을 불러오지 못했습니다.");
+        }
+        if (repliesResult.status === "fulfilled") {
+          myReplies = repliesResult.value.docs.map((replyDoc) => replyDoc.data());
+        } else {
+          console.error("내 답글을 내보내지 못했습니다.", repliesResult.reason);
+          warnings.push("내가 쓴 답글을 불러오지 못했습니다.");
+        }
+      } else {
+        warnings.push("Firebase에 연결되거나 로그인한 상태가 아니어서 서버에 저장된 일기와 게시글은 포함하지 못했습니다.");
+      }
+
+      if (!checkinStorageReady) warnings.push("브라우저 마음 기록을 읽지 못했습니다.");
+      if (!careStorageReady) warnings.push("브라우저 안심 목록을 읽지 못했습니다.");
+      const lines = [
+        "섬, 쉼 — 내 기록",
+        `내보낸 날짜: ${formatExportDate(new Date())}`,
+        "이 파일은 개인 기록을 포함합니다. 안전한 곳에 보관해 주세요.",
+        "",
+        "[마음 체크 기록]"
+      ];
+      if (checkins.length) {
+        checkins.forEach((entry, index) => {
+          lines.push(
+            "",
+            `기록 ${index + 1} · ${entry.date || formatExportDate(entry.createdAt)}`,
+            `마음: ${checkinLabel(moodLabels, entry, "mood", "기록된 마음")}`,
+            `영향을 준 일: ${checkinLabel(causeLabels, entry, "cause", "기록 없음")}`,
+            `필요한 것: ${checkinLabel(needLabels, entry, "need", "기록 없음")}`,
+            `마음의 무게: ${entry.intensity}/5`
+          );
+          if (entry.note) lines.push(`나에게 남긴 말: ${entry.note}`);
+        });
+      } else {
+        lines.push("아직 마음 체크 기록이 없습니다.");
+      }
+
+      lines.push("", "[나만의 안심 목록]");
+      if (careItems.length) {
+        careItems.forEach((entry, index) => {
+          lines.push("", `${index + 1}. ${careCategoryLabels[entry.category]} · ${entry.title}`);
+          if (entry.detail) lines.push(`메모: ${entry.detail}`);
+        });
+      } else {
+        lines.push("저장된 안심 목록이 없습니다.");
+      }
+
+      lines.push("", "[나만의 마음 일기]");
+      if (journalEntries.length) {
+        journalEntries.forEach((entry, index) => {
+          lines.push(
+            "",
+            `일기 ${index + 1} · ${entry.date || "날짜 정보 없음"} · 기분 ${entry.mood}/5`,
+            entry.content || "내용 없음"
+          );
+        });
+      } else {
+        lines.push("포함할 계정 일기가 없습니다.");
+      }
+
+      lines.push("", "[익명 게시판에 내가 쓴 글]");
+      if (myPosts.length) {
+        myPosts
+          .sort((a, b) => (a.createdAt?.toMillis?.() ?? 0) - (b.createdAt?.toMillis?.() ?? 0))
+          .forEach((post, index) => {
+            lines.push(
+              "",
+              `게시글 ${index + 1} · ${post.category || "주제 없음"} · ${formatExportDate(post.createdAt)}`,
+              post.content || "내용 없음"
+            );
+          });
+      } else {
+        lines.push("내가 쓴 게시글이 없습니다.");
+      }
+
+      lines.push("", "[익명 게시판에 내가 쓴 답글]");
+      if (myReplies.length) {
+        myReplies
+          .sort((a, b) => (a.createdAt?.toMillis?.() ?? 0) - (b.createdAt?.toMillis?.() ?? 0))
+          .forEach((reply, index) => {
+            lines.push("", `답글 ${index + 1} · ${formatExportDate(reply.createdAt)}`, reply.content || "내용 없음");
+          });
+      } else {
+        lines.push("내가 쓴 답글이 없습니다.");
+      }
+
+      if (warnings.length) {
+        lines.push("", "[포함되지 않았을 수 있는 내용]", ...warnings.map((warning) => `- ${warning}`));
+      }
+
+      try {
+        const file = new Blob([`\uFEFF${lines.join("\n")}\n`], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(file);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `섬쉼-내-기록-${dateToday()}.txt`;
+        document.body.append(link);
+        link.click();
+        link.remove();
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+        exportStatus.textContent = warnings.length
+          ? `읽기 쉬운 파일로 저장했어요. 일부 항목은 포함되지 않았을 수 있어요: ${warnings.join(" ")}`
+          : "체크인, 안심 목록, 계정 일기, 내가 쓴 게시글과 답글을 읽기 쉬운 파일로 저장했어요.";
+      } catch (error) {
+        console.error("내 기록을 정리하거나 저장하지 못했습니다.", error);
+        exportStatus.textContent = "기록을 정리하거나 파일로 저장하지 못했어요. 연결 상태와 브라우저 설정을 확인해 주세요.";
+      } finally {
+        exportButton.disabled = false;
+      }
+    });
+
     const categoryOptions = ["학교·진로", "관계", "마음·건강", "일상", "기타"];
     const postForm = document.querySelector("#post-form");
     const postList = document.querySelector("#post-list");

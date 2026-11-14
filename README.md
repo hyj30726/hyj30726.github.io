@@ -1,28 +1,36 @@
-# 마음의 작은 섬
+# 황유주 소개 페이지와 마음의 작은 섬
 
-마음을 살펴보고 잠시 쉬어가는 웹페이지입니다.
+국민대학교 경영정보학부 26학번 황유주(Hwang Yuju)의 개인 소개 페이지입니다.
+GitHub Pages 주소: <https://hyj30726.github.io/>
 
-메인 주소 <https://hyj30726.github.io/> 에서 섬, 쉼으로 이동합니다.
+## 파일
 
-## 주요 기능
+- `index.html` — 소개, 학업·역량, 프로젝트 링크, 주간 루틴, 목표, FAQ 공개 질문, Firestore 방명록·공감, 실시간 짝맞추기 TOP 3, 연락처
+- `island.html` — 직접 입력을 포함한 마음 체크와 브라우저 기록, 안심 목록, 읽기 쉬운 TXT 백업, Firebase 로그인·익명 게시판·비공개 일기, 쉬어가기 도구와 도움 연락처
+- `island-logo.svg` — 마음의 작은 섬 페이지 로고
+- `og-image.svg` — 공유 이미지의 편집 가능한 원본
+- `og-image.png` — Open Graph와 X 카드에서 사용하는 1200×630 미리보기 이미지
+- `robots.txt`, `sitemap.xml` — 크롤러 안내와 공개 URL 목록
 
-- 체크인 기록은 사용 중인 브라우저의 `localStorage`에만 저장됩니다.
-- 이메일/비밀번호 계정으로 로그인하면 마음일기를 Firebase에 저장하고 다시 볼 수 있습니다. 일기는 작성자 계정만 읽고 삭제할 수 있습니다.
-- 익명 게시글과 답글은 Firebase에 공개 저장됩니다. 게시글에 이모지로 공감할 수 있고, 게시판은 실시간으로 갱신됩니다.
-- 로그인하지 않아도 공개 게시판을 둘러볼 수 있습니다.
+## Firebase 공유 기능
 
-## Firebase 설정
+섬 페이지의 공개 게시판과 비공개 일기, 소개 페이지의 공개 질문은 Firebase를 사용합니다. 소개 페이지의 질문은 `profileQuestions` 경로에 저장되며, 방명록·공감·게임 순위는 해당 기능의 Firestore 규칙이 별도로 허용되어야 합니다. 방명록과 질문, 닉네임은 공개됩니다. 질문은 이메일을 받지 않습니다.
 
-1. Firebase Authentication에서 **이메일/비밀번호**와 **익명** 로그인을 사용 설정합니다.
-2. Authentication의 **승인된 도메인**에 `hyj30726.github.io`를 추가합니다. Codespaces 미리보기를 사용할 경우 해당 미리보기 호스트도 추가해야 합니다.
-3. Firestore 데이터베이스를 만들고, 프로젝트 루트에서 보안 규칙을 배포합니다.
+Firebase Authentication에서 이메일/비밀번호와 익명 로그인을 사용 설정하고, 승인된 도메인에 `hyj30726.github.io`를 추가하세요. Firestore 규칙 원본은 `firestore.rules`이며, Firebase Console의 Firestore Database → Rules에서 게시하거나 Firebase CLI로 배포할 수 있습니다.
 
-   ```sh
-   firebase deploy --only firestore:rules --project ureka-28d23
-   ```
+```sh
+firebase deploy --only firestore:rules --project ureka-28d23
+```
 
-4. `island.html`의 Firebase 웹 앱 설정이 Firebase 콘솔의 웹 앱과 일치하는지 확인합니다.
+Rules 변경은 GitHub Pages 배포와 별개로 Firebase에 게시해야 합니다.
 
-계정 생성이나 로그인이 안 되면 화면의 오류 안내를 확인하세요. `auth/operation-not-allowed`는 해당 로그인 방식이 꺼져 있다는 뜻이고, `auth/unauthorized-domain`은 현재 접속 주소를 승인된 도메인에 추가해야 한다는 뜻입니다.
+## 검색 접근성
 
-게시글과 답글은 공개됩니다. Firestore 규칙은 데이터 접근을 제한하지만 게시물의 유해성 검토나 스팸 방지를 대신하지 않습니다. 체크인 기록은 브라우저에 남고, 마음일기만 Firebase 계정에 저장됩니다. 이 페이지는 전문 상담이나 치료를 대신하지 않습니다.
+- 페이지 제목, 설명, canonical URL, Open Graph, X 카드 메타데이터를 제공합니다.
+- JSON-LD의 `Person`, `WebSite`, `ProfilePage` 정보는 화면에 보이는 자기소개와 맞춥니다.
+- FAQ는 방문자가 읽을 수 있는 HTML로도 표시합니다. 구조화 데이터가 검색 결과의 특별한 표시를 보장하지는 않습니다.
+- 생성형 검색을 위한 별도 마크업이나 반복 키워드는 추가하지 않습니다. 정확하고 구체적인 자기소개와 크롤러가 읽을 수 있는 기본 구조를 우선합니다.
+
+## 게시 후 설정
+
+사이트 소유자 계정으로 Google Search Console과 Bing Webmaster Tools에 사이트를 등록하고, `https://hyj30726.github.io/sitemap.xml`을 제출할 수 있습니다. 제출은 검색 노출이나 즉시 색인을 보장하지 않습니다.

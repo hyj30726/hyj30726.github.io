@@ -14,7 +14,7 @@ GitHub Pages 주소: <https://hyj30726.github.io/>
 
 ## Firebase 공유 기능
 
-섬 페이지의 공개 게시판과 비공개 일기, 소개 페이지의 공개 질문은 Firebase를 사용합니다. 소개 페이지의 질문은 `profileQuestions` 경로에 저장되며, 방명록·공감·게임 순위는 해당 기능의 Firestore 규칙이 별도로 허용되어야 합니다. 방명록과 질문, 닉네임은 공개됩니다. 질문은 이메일을 받지 않습니다.
+섬 페이지의 공개 게시판과 비공개 일기, 소개 페이지의 방명록·공감·공개 질문·게임 순위는 Firebase를 사용합니다. 프로필 기능의 Firestore 규칙은 `firestore.rules`에 포함되어 있습니다. 방명록, 댓글, 질문, 닉네임과 점수판은 공개되며 질문은 이메일을 받지 않습니다.
 
 Firebase Authentication에서 이메일/비밀번호와 익명 로그인을 사용 설정하고, 승인된 도메인에 `hyj30726.github.io`를 추가하세요. Firestore 규칙 원본은 `firestore.rules`이며, Firebase Console의 Firestore Database → Rules에서 게시하거나 Firebase CLI로 배포할 수 있습니다.
 

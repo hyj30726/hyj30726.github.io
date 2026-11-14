@@ -55,6 +55,167 @@ service cloud.firestore {
         && request.resource.data.updatedAt == request.time;
     }
 
+    function profileGuestbookPath(entryId) {
+      return /databases/$(database)/documents/profileGuestbook/$(entryId);
+    }
+
+    function profileGuestbookReactionPath(entryId, userId) {
+      return /databases/$(database)/documents/profileGuestbook/$(entryId)/reactions/$(userId);
+    }
+
+    function validProfilePageVote(vote) {
+      return vote in ['up', 'down'];
+    }
+
+    function profilePageStatsPath() {
+      return /databases/$(database)/documents/profilePageReactions/main;
+    }
+
+    function profilePageVotePath(userId) {
+      return /databases/$(database)/documents/profilePageReactions/main/votes/$(userId);
+    }
+
+    function validProfilePageStats(data) {
+      return data.keys().hasAll(['up', 'down'])
+        && data.keys().hasOnly(['up', 'down'])
+        && data.up is int
+        && data.up >= 0
+        && data.down is int
+        && data.down >= 0;
+    }
+
+    function validNewProfilePageStats() {
+      let votePath = profilePageVotePath(request.auth.uid);
+      let vote = getAfter(votePath).data;
+      return validProfilePageStats(request.resource.data)
+        && !exists(votePath)
+        && existsAfter(votePath)
+        && vote.userUid == request.auth.uid
+        && vote.createdAt == request.time
+        && (
+          (vote.vote == 'up' && request.resource.data.up == 1 && request.resource.data.down == 0)
+          || (vote.vote == 'down' && request.resource.data.up == 0 && request.resource.data.down == 1)
+        );
+    }
+
+    function validUpdatedProfilePageStats() {
+      let votePath = profilePageVotePath(request.auth.uid);
+      let hadVote = exists(votePath);
+      let hasVote = existsAfter(votePath);
+      let oldVote = hadVote ? get(votePath).data.vote : '';
+      let newVote = hasVote ? getAfter(votePath).data.vote : '';
+      return validProfilePageStats(request.resource.data)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['up', 'down'])
+        && (
+          (!hadVote && hasVote && (
+            (newVote == 'up'
+              && request.resource.data.up == resource.data.up + 1
+              && request.resource.data.down == resource.data.down)
+            || (newVote == 'down'
+              && request.resource.data.up == resource.data.up
+              && request.resource.data.down == resource.data.down + 1)
+          ))
+          || (hadVote && !hasVote && (
+            (oldVote == 'up'
+              && resource.data.up > 0
+              && request.resource.data.up == resource.data.up - 1
+              && request.resource.data.down == resource.data.down)
+            || (oldVote == 'down'
+              && resource.data.down > 0
+              && request.resource.data.up == resource.data.up
+              && request.resource.data.down == resource.data.down - 1)
+          ))
+          || (hadVote && hasVote && oldVote != newVote && (
+            (oldVote == 'up' && newVote == 'down'
+              && resource.data.up > 0
+              && request.resource.data.up == resource.data.up - 1
+              && request.resource.data.down == resource.data.down + 1)
+            || (oldVote == 'down' && newVote == 'up'
+              && resource.data.down > 0
+              && request.resource.data.up == resource.data.up + 1
+              && request.resource.data.down == resource.data.down - 1)
+          ))
+        );
+    }
+
+    function validNewProfilePageVote(userId) {
+      let statsPath = profilePageStatsPath();
+      let statsAfter = getAfter(statsPath).data;
+      let statsBefore = exists(statsPath) ? get(statsPath).data : null;
+      return signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.keys().hasAll(['userUid', 'vote', 'createdAt'])
+        && request.resource.data.keys().hasOnly(['userUid', 'vote', 'createdAt'])
+        && request.resource.data.userUid == userId
+        && validProfilePageVote(request.resource.data.vote)
+        && request.resource.data.createdAt == request.time
+        && existsAfter(statsPath)
+        && (
+          (!exists(statsPath) && (
+            (request.resource.data.vote == 'up' && statsAfter.up == 1 && statsAfter.down == 0)
+            || (request.resource.data.vote == 'down' && statsAfter.up == 0 && statsAfter.down == 1)
+          ))
+          || (exists(statsPath) && (
+            (request.resource.data.vote == 'up'
+              && statsAfter.up == statsBefore.up + 1
+              && statsAfter.down == statsBefore.down)
+            || (request.resource.data.vote == 'down'
+              && statsAfter.up == statsBefore.up
+              && statsAfter.down == statsBefore.down + 1)
+          ))
+        );
+    }
+
+    function validUpdatedProfilePageVote(userId) {
+      let statsPath = profilePageStatsPath();
+      let statsBefore = get(statsPath).data;
+      let statsAfter = getAfter(statsPath).data;
+      let oldVote = resource.data.vote;
+      let newVote = request.resource.data.vote;
+      return signedIn()
+        && request.auth.uid == userId
+        && resource.data.userUid == userId
+        && request.resource.data.keys().hasAll(['userUid', 'vote', 'createdAt'])
+        && request.resource.data.keys().hasOnly(['userUid', 'vote', 'createdAt'])
+        && request.resource.data.userUid == userId
+        && validProfilePageVote(newVote)
+        && newVote != oldVote
+        && request.resource.data.createdAt == request.time
+        && exists(statsPath)
+        && existsAfter(statsPath)
+        && (
+          (oldVote == 'up' && newVote == 'down'
+            && statsBefore.up > 0
+            && statsAfter.up == statsBefore.up - 1
+            && statsAfter.down == statsBefore.down + 1)
+          || (oldVote == 'down' && newVote == 'up'
+            && statsBefore.down > 0
+            && statsAfter.up == statsBefore.up + 1
+            && statsAfter.down == statsBefore.down - 1)
+        );
+    }
+
+    function validDeletedProfilePageVote(userId) {
+      let statsPath = profilePageStatsPath();
+      let statsBefore = get(statsPath).data;
+      let statsAfter = getAfter(statsPath).data;
+      return signedIn()
+        && request.auth.uid == userId
+        && resource.data.userUid == userId
+        && exists(statsPath)
+        && existsAfter(statsPath)
+        && (
+          (resource.data.vote == 'up'
+            && statsBefore.up > 0
+            && statsAfter.up == statsBefore.up - 1
+            && statsAfter.down == statsBefore.down)
+          || (resource.data.vote == 'down'
+            && statsBefore.down > 0
+            && statsAfter.up == statsBefore.up
+            && statsAfter.down == statsBefore.down - 1)
+        );
+    }
+
     match /posts/{postId} {
       allow read: if true;
       allow create: if signedIn() && validPost();
@@ -135,6 +296,141 @@ service cloud.firestore {
         && request.resource.data.text.size() <= 300
         && request.resource.data.createdAt == request.time;
       allow update, delete: if false;
+    }
+
+    match /profileGuestbook/{entryId} {
+      allow read: if true;
+      allow create: if signedIn()
+        && request.resource.data.keys().hasAll([
+          'authorUid', 'name', 'text', 'heartCount', 'createdAt'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'authorUid', 'name', 'text', 'heartCount', 'createdAt'
+        ])
+        && request.resource.data.authorUid == request.auth.uid
+        && request.resource.data.name is string
+        && request.resource.data.name.size() <= 12
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0
+        && request.resource.data.text.size() <= 200
+        && request.resource.data.heartCount == 0
+        && request.resource.data.createdAt == request.time;
+      allow update: if signedIn()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['heartCount'])
+        && request.resource.data.heartCount is int
+        && (
+          (
+            request.resource.data.heartCount == resource.data.heartCount + 1
+            && !exists(profileGuestbookReactionPath(entryId, request.auth.uid))
+            && existsAfter(profileGuestbookReactionPath(entryId, request.auth.uid))
+          )
+          || (
+            request.resource.data.heartCount == resource.data.heartCount - 1
+            && resource.data.heartCount > 0
+            && exists(profileGuestbookReactionPath(entryId, request.auth.uid))
+            && !existsAfter(profileGuestbookReactionPath(entryId, request.auth.uid))
+          )
+        );
+      allow delete: if signedIn() && resource.data.authorUid == request.auth.uid;
+
+      match /reactions/{userId} {
+        allow read: if signedIn()
+          && (
+            resource.data.userUid == request.auth.uid
+            || get(profileGuestbookPath(entryId)).data.authorUid == request.auth.uid
+          );
+        allow create: if signedIn()
+          && request.auth.uid == userId
+          && request.resource.data.keys().hasAll(['userUid', 'createdAt'])
+          && request.resource.data.keys().hasOnly(['userUid', 'createdAt'])
+          && request.resource.data.userUid == userId
+          && request.resource.data.createdAt == request.time
+          && exists(profileGuestbookPath(entryId))
+          && getAfter(profileGuestbookPath(entryId)).data.heartCount
+            == get(profileGuestbookPath(entryId)).data.heartCount + 1;
+        allow update: if false;
+        allow delete: if signedIn()
+          && (
+            (
+              request.auth.uid == userId
+              && exists(profileGuestbookPath(entryId))
+              && getAfter(profileGuestbookPath(entryId)).data.heartCount
+                == get(profileGuestbookPath(entryId)).data.heartCount - 1
+            )
+            || (
+              get(profileGuestbookPath(entryId)).data.authorUid == request.auth.uid
+              && !existsAfter(profileGuestbookPath(entryId))
+            )
+          );
+      }
+
+      match /replies/{replyId} {
+        allow read: if true;
+        allow create: if signedIn()
+          && request.resource.data.keys().hasAll(['authorUid', 'name', 'text', 'createdAt'])
+          && request.resource.data.keys().hasOnly(['authorUid', 'name', 'text', 'createdAt'])
+          && request.resource.data.authorUid == request.auth.uid
+          && request.resource.data.name is string
+          && request.resource.data.name.size() <= 12
+          && request.resource.data.text is string
+          && request.resource.data.text.size() > 0
+          && request.resource.data.text.size() <= 120
+          && request.resource.data.createdAt == request.time;
+        allow update: if false;
+        allow delete: if signedIn()
+          && (
+            resource.data.authorUid == request.auth.uid
+            || (
+              get(profileGuestbookPath(entryId)).data.authorUid == request.auth.uid
+              && !existsAfter(profileGuestbookPath(entryId))
+            )
+          );
+      }
+    }
+
+    match /profilePageReactions/{statsId} {
+      allow read: if statsId == 'main';
+      allow create: if statsId == 'main'
+        && signedIn()
+        && validNewProfilePageStats();
+      allow update: if statsId == 'main'
+        && signedIn()
+        && validUpdatedProfilePageStats();
+      allow delete: if false;
+
+      match /votes/{userId} {
+        allow read: if signedIn() && request.auth.uid == userId;
+        allow create: if validNewProfilePageVote(userId);
+        allow update: if validUpdatedProfilePageVote(userId);
+        allow delete: if validDeletedProfilePageVote(userId);
+      }
+    }
+
+    match /memoryMatchScores/{userId} {
+      allow read: if true;
+      allow create: if signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.keys().hasAll(['userUid', 'name', 'moves', 'updatedAt'])
+        && request.resource.data.keys().hasOnly(['userUid', 'name', 'moves', 'updatedAt'])
+        && request.resource.data.userUid == userId
+        && request.resource.data.name is string
+        && request.resource.data.name.size() <= 12
+        && request.resource.data.moves is int
+        && request.resource.data.moves >= 6
+        && request.resource.data.moves <= 1000
+        && request.resource.data.updatedAt == request.time;
+      allow update: if signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['name', 'moves', 'updatedAt'])
+        && request.resource.data.userUid == userId
+        && request.resource.data.name is string
+        && request.resource.data.name.size() <= 12
+        && request.resource.data.moves is int
+        && request.resource.data.moves >= 6
+        && request.resource.data.moves < resource.data.moves
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if false;
     }
 
     match /{path=**}/reactions/{userId} {

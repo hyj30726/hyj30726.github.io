@@ -281,6 +281,7 @@ details.f p{color:var(--sub);margin-top:8px;font-size:15px}
 .question-item{padding:16px 18px}
 .question-item .eh{margin-bottom:8px}
 .question-item p{white-space:pre-wrap;overflow-wrap:anywhere}
+.question-answer-heading{margin:12px 0 0!important;color:var(--sub);font-size:14px;font-weight:600}
 /* guestbook */
 .gbform{display:grid;gap:10px;margin-bottom:28px}
 .gbform input,.gbform textarea,.rform input{width:100%;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:10px 12px;font:400 15px var(--sans)}
@@ -901,6 +902,7 @@ const questionForm=$("question-form");
 const questionSubmit=questionForm.querySelector('button[type="submit"]');
 const questionStatus=$("question-status");
 let questionCloud=null;
+let questionAnswerUnsubscribes=[];
 $("question-text").addEventListener("input",event=>{
   $("question-count").textContent=event.target.value.length+" / 300";
 });
@@ -929,6 +931,8 @@ window.profileCloudReady.then(({db,user,sdk})=>{
   sdk.onSnapshot(
     sdk.query(sdk.collection(db,"profileQuestions"),sdk.orderBy("createdAt","desc"),sdk.limit(50)),
     snapshot=>{
+      questionAnswerUnsubscribes.forEach(unsubscribe=>unsubscribe());
+      questionAnswerUnsubscribes=[];
       const list=$("question-list");
       list.replaceChildren();
       if(snapshot.empty){
@@ -940,8 +944,59 @@ window.profileCloudReady.then(({db,user,sdk})=>{
         const item=h("article","question-item box");
         const meta=h("div","eh");
         meta.append(h("b",null,question.name||"익명"),h("span",null,cloudTime(question.createdAt)));
-        item.append(meta,h("p",null,question.text||""));
+        const answers=h("div","replies");
+        const answerHeading=h("p","question-answer-heading","답변");
+        const answerForm=h("form","rform");
+        const answerName=h("input");
+        answerName.placeholder="이름 (선택)";
+        answerName.maxLength=12;
+        answerName.setAttribute("aria-label","답변 작성자");
+        const answerText=h("input");
+        answerText.placeholder="답변을 입력하세요";
+        answerText.maxLength=300;
+        answerText.required=true;
+        answerText.setAttribute("aria-label","답변 내용");
+        const answerButton=h("button",null,"답변 등록");
+        answerButton.type="submit";
+        answerForm.append(answerName,answerText,answerButton);
+        answerForm.addEventListener("submit",async event=>{
+          event.preventDefault();
+          const text=answerText.value.trim();
+          if(!text)return;
+          answerButton.disabled=true;
+          try{
+            await sdk.addDoc(sdk.collection(db,"profileQuestions",questionDoc.id,"answers"),{
+              authorUid:user.uid,
+              name:answerName.value.trim()||"익명",
+              text,
+              createdAt:sdk.serverTimestamp()
+            });
+            answerText.value="";
+            questionStatus.textContent="답변을 공개 질문에 등록했어요.";
+          }catch(error){questionStatus.textContent=cloudErrorMessage(error,"답변 저장")}
+          finally{answerButton.disabled=false}
+        });
+        item.append(meta,h("p",null,question.text||""),answerHeading,answers,answerForm);
         list.append(item);
+        const answersQuery=sdkQuery(questionCloud,"profileQuestions",questionDoc.id,"answers");
+        const unsubscribe=sdk.onSnapshot(answersQuery,answerSnapshot=>{
+          answers.replaceChildren();
+          if(answerSnapshot.empty){
+            answers.append(h("div",null,"아직 답변이 없어요."));
+            return;
+          }
+          answerSnapshot.forEach(answerDoc=>{
+            const answer=answerDoc.data();
+            const row=h("div");
+            row.append(
+              h("b",null,answer.name||"익명"),
+              h("small",null,cloudTime(answer.createdAt)),
+              h("div",null,answer.text||"")
+            );
+            answers.append(row);
+          });
+        },error=>{questionStatus.textContent=cloudErrorMessage(error,"답변 목록 불러오기")});
+        questionAnswerUnsubscribes.push(unsubscribe);
       });
     },
     error=>{questionStatus.textContent=cloudErrorMessage(error,"질문 목록 불러오기")}

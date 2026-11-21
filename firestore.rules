@@ -355,7 +355,7 @@ service cloud.firestore {
       match /reactions/{userId} {
         allow read: if signedIn()
           && (
-            resource.data.userUid == request.auth.uid
+            request.auth.uid == userId
             || get(profileGuestbookPath(entryId)).data.authorUid == request.auth.uid
           );
         allow create: if signedIn()

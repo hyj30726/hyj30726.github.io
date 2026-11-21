@@ -711,11 +711,14 @@ const guestbookSubmit=guestbookForm.querySelector('button[type="submit"]');
 let guestbookCloud=null;
 let guestbookReactionIds=new Set();
 let guestbookUnsubscribe=null;
-let guestbookReactionUnsubscribe=null;
 let replyUnsubscribes=[];
+let guestbookReactionUnsubscribes=[];
 function renderGuestbook(snapshot){
   replyUnsubscribes.forEach(unsubscribe=>unsubscribe());
   replyUnsubscribes=[];
+  guestbookReactionUnsubscribes.forEach(unsubscribe=>unsubscribe());
+  guestbookReactionUnsubscribes=[];
+  guestbookReactionIds=new Set();
   const list=$("gblist");
   list.replaceChildren();
   if(snapshot.empty){list.append(h("p","empty","아직 방명록이 없어요. 첫 글을 남겨 주세요."));return}
@@ -775,6 +778,15 @@ function renderGuestbook(snapshot){
     });
     article.append(replyForm);
     list.append(article);
+    const reactionRef=guestbookCloud.sdk.doc(
+      guestbookCloud.db,"profileGuestbook",entryDoc.id,"reactions",guestbookCloud.user.uid
+    );
+    const unsubscribeReaction=guestbookCloud.sdk.onSnapshot(reactionRef,reactionSnapshot=>{
+      if(reactionSnapshot.exists())guestbookReactionIds.add(entryDoc.id);
+      else guestbookReactionIds.delete(entryDoc.id);
+      heart.setAttribute("aria-pressed",String(guestbookReactionIds.has(entryDoc.id)));
+    },error=>{gbStatus.textContent=cloudErrorMessage(error,"내 공감 상태 불러오기")});
+    guestbookReactionUnsubscribes.push(unsubscribeReaction);
     const repliesQuery=sdkQuery(guestbookCloud,"profileGuestbook",entryDoc.id,"replies");
     const unsubscribe=guestbookCloud.sdk.onSnapshot(repliesQuery,replySnapshot=>{
       replies.replaceChildren();
@@ -856,19 +868,6 @@ function startSharedFeatures(cloud){
     sdk.query(sdk.collection(db,"profileGuestbook"),sdk.orderBy("createdAt","desc"),sdk.limit(100)),
     renderGuestbook,
     error=>{gbStatus.textContent=cloudErrorMessage(error,"방명록 불러오기");guestbookSubmit.disabled=true}
-  );
-  guestbookReactionUnsubscribe=sdk.onSnapshot(
-    sdk.query(sdk.collectionGroup(db,"reactions"),sdk.where("userUid","==",user.uid)),
-    snapshot=>{
-      guestbookReactionIds=new Set(snapshot.docs
-        .filter(reactionDoc=>reactionDoc.ref.path.startsWith("profileGuestbook/"))
-        .map(reactionDoc=>reactionDoc.ref.parent.parent?.id)
-        .filter(Boolean));
-      document.querySelectorAll(".gb-heart").forEach(button=>{
-        button.setAttribute("aria-pressed",String(guestbookReactionIds.has(button.dataset.entryId)));
-      });
-    },
-    error=>{gbStatus.textContent=cloudErrorMessage(error,"공감 상태 불러오기")}
   );
 }
 $("gbtext").oninput=e=>$("cnt").textContent=e.target.value.length+" / 200";
